@@ -1,22 +1,21 @@
 import { invoke } from "@tauri-apps/api/core";
 
-let greetInputEl: HTMLInputElement | null;
-let greetMsgEl: HTMLElement | null;
+window.addEventListener("DOMContentLoaded", () => {
+  const newReadingBtn = document.getElementById("new-reading");
+  const hexagramOutputEl = document.getElementById("hexagram-output");
 
-async function greet() {
-  if (greetMsgEl && greetInputEl) {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsgEl.textContent = await invoke("greet", {
-      name: greetInputEl.value,
+  if (newReadingBtn && hexagramOutputEl) {
+    newReadingBtn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      try {
+        // Invoke the Rust command "build" which returns an array of strings.
+        const hexagram = await invoke<string[]>("build");
+        // Display the hexagram, joining each line with a newline.
+        hexagramOutputEl.textContent = hexagram.join("\n");
+      } catch (error) {
+        console.error("Failed to generate hexagram:", error);
+        hexagramOutputEl.textContent = "Error generating hexagram.";
+      }
     });
   }
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
 });
