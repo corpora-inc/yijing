@@ -16,8 +16,8 @@ pub enum Line {
 pub struct Hexs {
     pub original: Vec<String>,
     pub transformed: Option<Vec<String>>,
-    pub binary: String,                     // Binary for the original hexagram
-    pub transformed_binary: Option<String>, // Binary for the transformed hexagram, if it exists
+    pub binary: String,
+    pub transformed_binary: Option<String>, // Add this field
 }
 
 /// Generates a random boolean with the given probability (0.0 to 1.0).
@@ -41,9 +41,9 @@ fn toss() -> Result<Line, anyhow::Error> {
     let sum: u8 = tosses.iter().map(|&coin| if coin { 3 } else { 2 }).sum();
 
     let line = match sum {
-        6 => Line::StableYin,
+        6 => Line::ChangingYin,
         7 => Line::StableYang,
-        8 => Line::ChangingYin,
+        8 => Line::StableYin,
         9 => Line::ChangingYang,
         _ => {
             return Err(anyhow::anyhow!(
@@ -90,22 +90,44 @@ fn build() -> Result<Hexs, String> {
         .collect::<Result<Vec<_>, _>>()
         .map_err(|err: anyhow::Error| format!("Failed to generate hexagram lines: {:#?}", err))?;
 
-    // Compute and log the binary for the original hexagram
+    // --- Compute and log the binary for the original hexagram ---
     let original_bin: String = assign_bin(&original_hex);
     println!(
         "Original hexagram lines in binary (bottom to top): {}",
         original_bin
     );
 
-    // Check if there are any changing lines.
-    let has_changes: bool = original_hex
+    let has_changes = original_hex
         .iter()
-        .any(|line: &Line| matches!(line, Line::ChangingYin | Line::ChangingYang));
+        .any(|line| matches!(line, Line::ChangingYin | Line::ChangingYang));
 
-    // Convert each line in the original hexagram to its descriptive string.
+    let (transformed_lines, transformed_binary) = if has_changes {
+        let stable_lines: Vec<Line> = original_hex.iter().map(|line| transform(line)).collect();
+        let transformed_bin = assign_bin(&stable_lines);
+        println!(
+            "Transformed hexagram lines in binary (bottom to top): {}",
+            transformed_bin
+        );
+
+        let lines = Some(
+            stable_lines
+                .iter()
+                .map(|line| match line {
+                    Line::StableYin => "——— ——— 8".to_string(),
+                    Line::StableYang => "——————— 7".to_string(),
+                    _ => unreachable!("Transformed hexagram should only contain stable lines"),
+                })
+                .collect(),
+        );
+
+        (lines, Some(transformed_bin))
+    } else {
+        (None, None)
+    };
+
     let original_lines: Vec<String> = original_hex
         .iter()
-        .map(|line: &Line| match line {
+        .map(|line| match line {
             Line::StableYin => "——— ——— 8".to_string(),
             Line::StableYang => "——————— 7".to_string(),
             Line::ChangingYin => "———O——— 6".to_string(),
@@ -113,42 +135,11 @@ fn build() -> Result<Hexs, String> {
         })
         .collect();
 
-    // If there are changing lines, transform them and compute the transformed binary.
-    let (transformed_lines, transformed_binary) = if has_changes {
-        // Convert the changing lines to stable lines.
-        let stable_lines: Vec<Line> = original_hex
-            .iter()
-            .map(|line: &Line| transform(line))
-            .collect();
-
-        // Compute and log the binary for the transformed hexagram
-        let transformed_bin: String = assign_bin(&stable_lines);
-        println!(
-            "Transformed hexagram lines in binary (bottom to top): {}",
-            transformed_bin
-        );
-
-        // Convert stable lines to their descriptive strings.
-        let transformed_strings: Vec<String> = stable_lines
-            .iter()
-            .map(|line: &Line| match line {
-                Line::StableYin => "——— ——— 8".to_string(),
-                Line::StableYang => "——————— 7".to_string(),
-                _ => unreachable!("Transformed hexagram should only contain stable lines"),
-            })
-            .collect();
-
-        (Some(transformed_strings), Some(transformed_bin))
-    } else {
-        (None, None)
-    };
-
-    // Return the Hexs struct including both binary strings.
     Ok(Hexs {
         original: original_lines,
         transformed: transformed_lines,
         binary: original_bin,
-        transformed_binary,
+        transformed_binary, // Set the field here
     })
 }
 

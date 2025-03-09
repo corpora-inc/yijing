@@ -1,6 +1,5 @@
 use rusqlite::{params, Connection, Result};
 use serde::Serialize;
-use tauri::{AppHandle, Manager};
 
 #[derive(Serialize)]
 pub struct IChingHexagram {
@@ -40,21 +39,9 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
 }
 
 #[tauri::command]
-pub fn fetch_hexagram_data(bin: String, app: AppHandle) -> Result<IChingHexagram, String> {
-    let db_path = app
-        .path()
-        .resolve("resources/db.sqlite3", tauri::path::BaseDirectory::Resource)
-        .map_err(|e| format!("Failed to resolve database path: {}", e))?;
-
-    // Log the resolved path for debugging
-    println!("Resolved database path: {}", db_path.display());
-
-    // Check if the file exists, and panic if it doesn’t (for dev-time clarity)
-    if !db_path.exists() {
-        panic!("Database file not found at: {}", db_path.display());
-    }
-
-    get_hexagram_by_binary(&db_path.to_string_lossy(), &bin).map_err(|err| {
+pub fn fetch_hexagram_data(bin: String) -> Result<IChingHexagram, String> {
+    let db_path = "/home/azhr/Code/CLIsandwebsites/I-Ching-app/corpora-i-ching/db.sqlite3";
+    get_hexagram_by_binary(db_path, &bin).map_err(|err| {
         format!(
             "Database error: {:#?}\nOccurred in file '{}' at line {}",
             err,
