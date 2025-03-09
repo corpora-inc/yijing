@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "corpora-i-ching/src-tauri/Cargo.toml"
+    ]
+}

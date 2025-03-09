@@ -23,6 +23,9 @@
     }
   },
   "bundle": {
+    "resources": [
+      "resources/db.sqlite3"
+    ],
     "active": true,
     "targets": "all",
     "icon": [
