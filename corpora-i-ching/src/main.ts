@@ -4,6 +4,7 @@ interface Hexs {
   original: string[];
   transformed?: string[]; // Optional, matches Rust Option<Vec<String>>
   binary: string;
+  transformed_binary?: string; // Optional, matches Rust Option<String>
 }
 
 interface IChingHexagram {
@@ -30,27 +31,48 @@ window.addEventListener("DOMContentLoaded", () => {
         const hexagram = await invoke<Hexs>("build");
         console.log("Hexagram from build:", hexagram);
 
-        // Use the binary to fetch data from the database
-        const hexagramData = await invoke<IChingHexagram>("fetch_hexagram_data", {
+        // Fetch data for the original hexagram
+        const originalHexData = await invoke<IChingHexagram>("fetch_hexagram_data", {
           bin: hexagram.binary,
         });
-        console.log("Hexagram data from DB:", hexagramData);
+        console.log("Original hexagram data from DB:", originalHexData);
 
-        // Format and display both the hexagram lines and DB data
+        // Fetch data for the transformed hexagram, if it exists
+        let transformedHexData: IChingHexagram | null = null;
+        if (hexagram.transformed_binary) {
+          transformedHexData = await invoke<IChingHexagram>("fetch_hexagram_data", {
+            bin: hexagram.transformed_binary,
+          });
+          console.log("Transformed hexagram data from DB:", transformedHexData);
+        }
+
+        // Format and display both hexagrams and their DB data
         const output = [
           "Original Hexagram:",
           ...hexagram.original,
-          ...(hexagram.transformed
-            ? ["", "Transformed Hexagram:", ...hexagram.transformed]
-            : []),
           "",
-          "Hexagram Details:",
-          `Number: ${hexagramData.number}`,
-          `English Name: ${hexagramData.english_name}`,
-          `Chinese Name: ${hexagramData.chinese_name} (${hexagramData.pinyin})`,
-          `Judgment (EN): ${hexagramData.judgment_en}`,
-          `Judgment (ZH): ${hexagramData.judgment_zh}`,
-          `Judgment (ES): ${hexagramData.judgment_es}`,
+          "Original Hexagram Details:",
+          `Number: ${originalHexData.number}`,
+          `English Name: ${originalHexData.english_name}`,
+          `Chinese Name: ${originalHexData.chinese_name} (${originalHexData.pinyin})`,
+          `Judgment (EN): ${originalHexData.judgment_en}`,
+          `Judgment (ZH): ${originalHexData.judgment_zh}`,
+          `Judgment (ES): ${originalHexData.judgment_es}`,
+          ...(hexagram.transformed && transformedHexData
+            ? [
+              "",
+              "Transformed Hexagram:",
+              ...hexagram.transformed,
+              "",
+              "Transformed Hexagram Details:",
+              `Number: ${transformedHexData.number}`,
+              `English Name: ${transformedHexData.english_name}`,
+              `Chinese Name: ${transformedHexData.chinese_name} (${transformedHexData.pinyin})`,
+              `Judgment (EN): ${transformedHexData.judgment_en}`,
+              `Judgment (ZH): ${transformedHexData.judgment_zh}`,
+              `Judgment (ES): ${transformedHexData.judgment_es}`,
+            ]
+            : []),
         ].join("\n");
 
         hexagramOutputEl.textContent = output;

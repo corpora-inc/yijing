@@ -16,7 +16,8 @@ pub enum Line {
 pub struct Hexs {
     pub original: Vec<String>,
     pub transformed: Option<Vec<String>>,
-    pub binary: String, // Expose the binary representation for database lookup.
+    pub binary: String,                     // Binary for the original hexagram
+    pub transformed_binary: Option<String>, // Binary for the transformed hexagram, if it exists
 }
 
 /// Generates a random boolean with the given probability (0.0 to 1.0).
@@ -89,7 +90,7 @@ fn build() -> Result<Hexs, String> {
         .collect::<Result<Vec<_>, _>>()
         .map_err(|err: anyhow::Error| format!("Failed to generate hexagram lines: {:#?}", err))?;
 
-    // --- Compute and log the binary for the original hexagram ---
+    // Compute and log the binary for the original hexagram
     let original_bin: String = assign_bin(&original_hex);
     println!(
         "Original hexagram lines in binary (bottom to top): {}",
@@ -112,15 +113,15 @@ fn build() -> Result<Hexs, String> {
         })
         .collect();
 
-    // If there are changing lines, transform them and log the binary of the transformed hexagram.
-    let transformed_lines: Option<Vec<String>> = if has_changes {
+    // If there are changing lines, transform them and compute the transformed binary.
+    let (transformed_lines, transformed_binary) = if has_changes {
         // Convert the changing lines to stable lines.
         let stable_lines: Vec<Line> = original_hex
             .iter()
             .map(|line: &Line| transform(line))
             .collect();
 
-        // --- Log the binary for the transformed hexagram ---
+        // Compute and log the binary for the transformed hexagram
         let transformed_bin: String = assign_bin(&stable_lines);
         println!(
             "Transformed hexagram lines in binary (bottom to top): {}",
@@ -128,25 +129,26 @@ fn build() -> Result<Hexs, String> {
         );
 
         // Convert stable lines to their descriptive strings.
-        Some(
-            stable_lines
-                .iter()
-                .map(|line: &Line| match line {
-                    Line::StableYin => "——— ——— 8".to_string(),
-                    Line::StableYang => "——————— 7".to_string(),
-                    _ => unreachable!("Transformed hexagram should only contain stable lines"),
-                })
-                .collect(),
-        )
+        let transformed_strings: Vec<String> = stable_lines
+            .iter()
+            .map(|line: &Line| match line {
+                Line::StableYin => "——— ——— 8".to_string(),
+                Line::StableYang => "——————— 7".to_string(),
+                _ => unreachable!("Transformed hexagram should only contain stable lines"),
+            })
+            .collect();
+
+        (Some(transformed_strings), Some(transformed_bin))
     } else {
-        None
+        (None, None)
     };
 
-    // Return the Hexs struct including the computed binary string.
+    // Return the Hexs struct including both binary strings.
     Ok(Hexs {
         original: original_lines,
         transformed: transformed_lines,
         binary: original_bin,
+        transformed_binary,
     })
 }
 
