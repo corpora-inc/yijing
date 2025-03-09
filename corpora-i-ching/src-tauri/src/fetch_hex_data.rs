@@ -1,0 +1,52 @@
+use rusqlite::{params, Connection, Result};
+use serde::Serialize;
+
+#[derive(Serialize)]
+pub struct IChingHexagram {
+    pub id: i32,
+    pub number: u32,
+    pub chinese_name: String,
+    pub pinyin: String,
+    pub binary: String,
+    pub judgment_zh: String,
+    pub judgment_en: String,
+    pub judgment_es: String,
+    pub english_name: String,
+}
+
+/// Query the database by the binary representation of the hexagram.
+pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram> {
+    let conn = Connection::open(db_path)?;
+    conn.query_row(
+        "SELECT id, number, chinese_name, pinyin, binary, judgment_zh, judgment_en, judgment_es, english_name
+         FROM iching_hexagram
+         WHERE binary = ?1",
+        params![bin],
+        |row| {
+            Ok(IChingHexagram {
+                id: row.get(0)?,
+                number: row.get(1)?,
+                chinese_name: row.get(2)?,
+                pinyin: row.get(3)?,
+                binary: row.get(4)?,
+                judgment_zh: row.get(5)?,
+                judgment_en: row.get(6)?,
+                judgment_es: row.get(7)?,
+                english_name: row.get(8)?,
+            })
+        },
+    )
+}
+
+#[tauri::command]
+pub fn fetch_hexagram_data(bin: String) -> Result<IChingHexagram, String> {
+    let db_path = "/home/azhr/Code/CLIsandwebsites/I-Ching-app/corpora-i-ching/db.sqlite3";
+    get_hexagram_by_binary(db_path, &bin).map_err(|err| {
+        format!(
+            "Database error: {:#?}\nOccurred in file '{}' at line {}",
+            err,
+            file!(),
+            line!()
+        )
+    })
+}
