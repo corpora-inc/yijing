@@ -1,5 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 
+interface IChingLine {
+  line_number: number;
+  text_zh: string;
+  text_en: string;
+  text_es: string;
+}
+
 interface Hexs {
   original: string[];
   transformed?: string[]; // Optional, matches Rust Option<Vec<String>>
@@ -17,6 +24,7 @@ interface IChingHexagram {
   judgment_en: string;
   judgment_es: string;
   english_name: string;
+  changing_lines: IChingLine[];
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -58,9 +66,24 @@ window.addEventListener("DOMContentLoaded", () => {
           `Judgment (EN): ${originalHexData.judgment_en}`,
           `Judgment (ZH): ${originalHexData.judgment_zh}`,
           `Judgment (ES): ${originalHexData.judgment_es}`,
-          ...(hexagram.transformed && transformedHexData
+
+          ...(originalHexData.changing_lines && originalHexData.changing_lines.length > 0
             ? [
               "",
+              "Changing Lines:",
+              ...originalHexData.changing_lines.flatMap((line) => [
+                `Line ${line.line_number}:`,
+                `  ZH: ${line.text_zh}`,
+                `  EN: ${line.text_en}`,
+                `  ES: ${line.text_es}`,
+                "",
+              ]),
+            ]
+            : []
+          ),
+
+          ...(hexagram.transformed && transformedHexData
+            ? [
               "Transformed Hexagram:",
               ...hexagram.transformed,
               "",
@@ -72,8 +95,10 @@ window.addEventListener("DOMContentLoaded", () => {
               `Judgment (ZH): ${transformedHexData.judgment_zh}`,
               `Judgment (ES): ${transformedHexData.judgment_es}`,
             ]
-            : []),
+            : []
+          ),
         ].join("\n");
+
 
         hexagramOutputEl.textContent = output;
       } catch (error) {
