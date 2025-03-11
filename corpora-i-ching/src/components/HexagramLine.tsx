@@ -26,15 +26,17 @@ const HexagramLine: React.FC<HexagramLineProps> = ({ digit, isChanging }) => {
                 {isChanging && (
                     <div className="absolute top-[6px] transform -translate-y-1/2 flex items-center justify-center z-10">
                         {digit === '6' ? (
-                            // Old Yin (O) - centered and thinner
+                            // Old Yin (O) - centered, black background, white center, white border
                             <div className="h-6 w-6 bg-black border-1 border-white rounded-full flex items-center justify-center">
-                                <div className="h-3 w-3 bg-white rounded-full" />
+                                <div className="h-4 w-4 bg-white rounded-full" />
                             </div>
                         ) : (
-                            // Old Yang (X) - centered and thinner
-                            <svg className="h-8 w-6 text-white" fill="none" stroke="#f3f4f6" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="6" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            // Old Yang (X) - centered, black background, white X, white border
+                            <div className="h-6 w-6 bg-black border-1 border-white rounded-full flex items-center justify-center">
+                                <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </div>
                         )}
                     </div>
                 )}
