@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import NoReadingView from './components/NoReadingView';
 import ReadingView from './components/ReadingView';
-import { Button } from '@/components/ui/button';
 
 // Define interfaces
 export interface IChingLine {
@@ -40,6 +40,11 @@ const App: React.FC = () => {
     const [originalHex, setOriginalHex] = useState<IChingHexagram | null>(null);
     const [transformedHex, setTransformedHex] = useState<IChingHexagram | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [languages, setLanguages] = useState({
+        zh: true,
+        en: true,
+        es: false,
+    });
 
     const handleNewReading = async () => {
         try {
@@ -101,6 +106,8 @@ const App: React.FC = () => {
                                 originalHex={originalHex!}
                                 transformedHex={transformedHex}
                                 error={error}
+                                languages={languages}
+                                setLanguages={setLanguages}
                             />
                             <Button
                                 onClick={handleResetReading}
