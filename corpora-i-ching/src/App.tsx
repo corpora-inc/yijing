@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { Button } from '@/components/ui/button'; // Import Shadcn Button
+import { Button } from '@/components/ui/button';
 
 // Define interfaces (unchanged)
 interface IChingLine {
@@ -31,7 +31,8 @@ interface IChingHexagram {
 }
 
 const App: React.FC = () => {
-    const [output, setOutput] = useState<string>('Click "New Reading" to generate a hexagram.');
+    const [hasReading, setHasReading] = useState(false); // New state to track reading
+    const [output, setOutput] = useState<string>(''); // Empty initial state
 
     const handleNewReading = async () => {
         try {
@@ -94,18 +95,32 @@ const App: React.FC = () => {
             ].join("\n");
 
             setOutput(formattedOutput);
+            setHasReading(true); // Switch to reading state
         } catch (error) {
             console.error("Failed to process hexagram:", error);
             setOutput(`Error: ${error}`);
+            setHasReading(true); // Show error in reading state
         }
     };
 
     return (
-        <div>
-            <Button onClick={handleNewReading}>
-                New Reading
-            </Button>
-            <pre id="hexagram-output">{output}</pre>
+        <div className="flex flex-col items-center justify-center flex-1">
+            {!hasReading ? (
+                // No Reading State
+                <div className="text-center">
+                    <p className="mb-4 text-lg text-gray-700">
+                        Concentrate on your question and click below to consult the I Ching.
+                    </p>
+                    <Button onClick={handleNewReading}>
+                        New Reading
+                    </Button>
+                </div>
+            ) : (
+                // Reading State
+                <div className="w-full">
+                    <pre className="text-sm whitespace-pre-wrap">{output}</pre>
+                </div>
+            )}
         </div>
     );
 };
