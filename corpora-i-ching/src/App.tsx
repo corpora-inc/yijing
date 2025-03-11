@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import NoReadingView from './components/NoReadingView';
+import ReadingView from './components/ReadingView';
 import { Button } from '@/components/ui/button';
 
-// Define interfaces (unchanged)
-interface IChingLine {
+// Define interfaces
+export interface IChingLine {
     line_number: number;
     text_zh: string;
     text_en: string;
     text_es: string;
 }
 
-interface Hexs {
+export interface Hexs {
     original: string[];
     transformed?: string[];
     binary: string;
     transformed_binary?: string;
 }
 
-interface IChingHexagram {
+export interface IChingHexagram {
     id: number;
     number: number;
     chinese_name: string;
@@ -31,8 +34,12 @@ interface IChingHexagram {
 }
 
 const App: React.FC = () => {
-    const [hasReading, setHasReading] = useState(false); // New state to track reading
-    const [output, setOutput] = useState<string>(''); // Empty initial state
+    const [mode, setMode] = useState<'consultation' | 'browse'>('consultation');
+    const [hasReading, setHasReading] = useState(false);
+    const [hexs, setHexs] = useState<Hexs | null>(null);
+    const [originalHex, setOriginalHex] = useState<IChingHexagram | null>(null);
+    const [transformedHex, setTransformedHex] = useState<IChingHexagram | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     const handleNewReading = async () => {
         try {
@@ -52,75 +59,63 @@ const App: React.FC = () => {
                 console.log("Transformed hexagram data from DB:", transformedHexData);
             }
 
-            const formattedOutput = [
-                "Original Hexagram:",
-                ...hexagram.original,
-                "",
-                "Original Hexagram Details:",
-                `Number: ${originalHexData.number}`,
-                `English Name: ${originalHexData.english_name}`,
-                `Chinese Name: ${originalHexData.chinese_name} (${originalHexData.pinyin})`,
-                `Judgment (EN): ${originalHexData.judgment_en}`,
-                `Judgment (ZH): ${originalHexData.judgment_zh}`,
-                `Judgment (ES): ${originalHexData.judgment_es}`,
-                ...(originalHexData.changing_lines && originalHexData.changing_lines.length > 0
-                    ? [
-                        "",
-                        "Changing Lines:",
-                        ...originalHexData.changing_lines.flatMap((line) => [
-                            `Line ${line.line_number}:`,
-                            `  ZH: ${line.text_zh}`,
-                            `  EN: ${line.text_en}`,
-                            `  ES: ${line.text_es}`,
-                            "",
-                        ]),
-                    ]
-                    : []
-                ),
-                ...(hexagram.transformed && transformedHexData
-                    ? [
-                        "Transformed Hexagram:",
-                        ...hexagram.transformed,
-                        "",
-                        "Transformed Hexagram Details:",
-                        `Number: ${transformedHexData.number}`,
-                        `English Name: ${transformedHexData.english_name}`,
-                        `Chinese Name: ${transformedHexData.chinese_name} (${transformedHexData.pinyin})`,
-                        `Judgment (EN): ${transformedHexData.judgment_en}`,
-                        `Judgment (ZH): ${transformedHexData.judgment_zh}`,
-                        `Judgment (ES): ${transformedHexData.judgment_es}`,
-                    ]
-                    : []
-                ),
-            ].join("\n");
-
-            setOutput(formattedOutput);
-            setHasReading(true); // Switch to reading state
+            setHexs(hexagram);
+            setOriginalHex(originalHexData);
+            setTransformedHex(transformedHexData);
+            setError(null);
+            setHasReading(true);
         } catch (error) {
             console.error("Failed to process hexagram:", error);
-            setOutput(`Error: ${error}`);
-            setHasReading(true); // Show error in reading state
+            setError(String(error));
+            setHasReading(true);
         }
     };
 
+    const handleResetReading = () => {
+        setHasReading(false);
+        setHexs(null);
+        setOriginalHex(null);
+        setTransformedHex(null);
+        setError(null);
+    };
+
     return (
-        <div className="flex flex-col items-center justify-center flex-1">
-            {!hasReading ? (
-                // No Reading State
-                <div className="text-center">
-                    <p className="mb-4 text-lg text-gray-700">
-                        Concentrate on your question and click below to consult the I Ching.
-                    </p>
-                    <Button onClick={handleNewReading}>
-                        New Reading
-                    </Button>
-                </div>
-            ) : (
-                // Reading State
-                <div className="w-full">
-                    <pre className="text-sm whitespace-pre-wrap">{output}</pre>
-                </div>
-            )}
+        <div className="flex flex-col flex-1 h-screen">
+            {/* Navigation Tabs */}
+            <Tabs value={mode} onValueChange={(value) => setMode(value as 'consultation' | 'browse')} className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="consultation">Consultation</TabsTrigger>
+                    <TabsTrigger value="browse">Browse</TabsTrigger>
+                </TabsList>
+            </Tabs>
+
+            {/* Main Content */}
+            <div className="flex flex-col items-center justify-center flex-1">
+                {mode === 'consultation' ? (
+                    !hasReading ? (
+                        <NoReadingView onNewReading={handleNewReading} />
+                    ) : (
+                        <div className="relative w-full h-full">
+                            <ReadingView
+                                hexs={hexs!}
+                                originalHex={originalHex!}
+                                transformedHex={transformedHex}
+                                error={error}
+                            />
+                            <Button
+                                onClick={handleResetReading}
+                                className="fixed bottom-4 right-4 rounded-full w-14 h-14 bg-blue-600 text-white hover:bg-blue-700 shadow-lg"
+                            >
+                                +
+                            </Button>
+                        </div>
+                    )
+                ) : (
+                    <div className="text-center">
+                        <p className="mt-4 text-gray-700">Browse mode coming soon!</p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };
