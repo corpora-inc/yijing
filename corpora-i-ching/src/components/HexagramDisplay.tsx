@@ -17,6 +17,7 @@ interface HexagramDisplayProps {
 
 const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram, languages, setLanguages }) => {
     const lines = title.includes('Original') ? hexs.original : hexs.transformed || [];
+    const showAnyLanguage = languages.zh || languages.en || languages.es;
 
     return (
         <CardContent className="space-y-4">
@@ -60,13 +61,19 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
                 </DropdownMenu>
             </div>
             <pre className="font-mono text-lg mb-2 bg-gray-100 p-2 rounded-md">{lines.join('\n')}</pre>
-            <p><strong>Number:</strong> {hexagram.number}</p>
-            <p><strong>English Name:</strong> {hexagram.english_name}</p>
-            <p><strong>Chinese Name:</strong> {hexagram.chinese_name} ({hexagram.pinyin})</p>
-            {languages.zh && <p><strong>Judgment (ZH):</strong> {hexagram.judgment_zh}</p>}
-            {languages.en && <p><strong>Judgment (EN):</strong> {hexagram.judgment_en}</p>}
-            {languages.es && <p><strong>Judgment (ES):</strong> {hexagram.judgment_es}</p>}
-            {hexagram.changing_lines.length > 0 && (
+            <div className="flex items-center space-x-4">
+                <h1 className="text-4xl font-bold text-gray-800">{hexagram.chinese_name}</h1>
+                <p className="text-lg italic">({hexagram.pinyin})</p>
+                {languages.en && <p className="text-lg">{hexagram.english_name}</p>}
+            </div>
+            {showAnyLanguage && (
+                <>
+                    {languages.zh && <p><strong>Judgment (ZH):</strong> {hexagram.judgment_zh}</p>}
+                    {languages.en && <p><strong>Judgment (EN):</strong> {hexagram.judgment_en}</p>}
+                    {languages.es && <p><strong>Judgment (ES):</strong> {hexagram.judgment_es}</p>}
+                </>
+            )}
+            {hexagram.changing_lines.length > 0 && showAnyLanguage && (
                 <div className="space-y-2">
                     <h3 className="text-lg font-medium mt-4">Changing Lines</h3>
                     {hexagram.changing_lines.map((line) => (
