@@ -18,7 +18,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
     // Get the original consultation code (bottom to top)
     const originalDigits = hexs.consultation_code.split('');
 
-    // For the transformed hexagram, map to the transformed state but preserve changing info
+    // For the transformed hexagram, map to the transformed state without changing indicators
     const transformedDigits = hexs.transformed_binary
         ? hexs.transformed_binary.split('').map((_bit, idx) => {
             const origDigit = hexs.consultation_code[idx];
@@ -30,7 +30,9 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
 
     // Determine which digits to use and track changing lines
     const digits = title.includes('Original') ? originalDigits : transformedDigits;
-    const isChangingArray = originalDigits.map(digit => digit === '6' || digit === '9');
+    const isChangingArray = title.includes('Original')
+        ? originalDigits.map(digit => digit === '6' || digit === '9')
+        : Array(digits.length).fill(false); // No changing indicators in transformed
 
     // Reverse for display (top line first)
     const displayLines = digits.slice().reverse();

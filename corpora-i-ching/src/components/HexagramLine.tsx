@@ -9,9 +9,9 @@ const HexagramLine: React.FC<HexagramLineProps> = ({ digit, isChanging }) => {
     const isBroken = digit === '6' || digit === '8'; // Yin lines (broken)
 
     return (
-        <div className="flex items-center justify-center mb-2">
+        <div className="flex items-center justify-center mb-2 relative">
             {/* Line Display */}
-            <div className="relative flex items-center justify-center w-44">
+            <div className="relative flex items-center justify-center w-44 z-0">
                 {isBroken ? (
                     // Broken line (Yin)
                     <>
@@ -24,14 +24,16 @@ const HexagramLine: React.FC<HexagramLineProps> = ({ digit, isChanging }) => {
                     <div className="h-3 w-44 bg-black rounded-none transition-all duration-300" />
                 )}
                 {isChanging && (
-                    <div className="absolute">
+                    <div className="absolute top-[6px] transform -translate-y-1/2 flex items-center justify-center z-10">
                         {digit === '6' ? (
-                            // Old Yin (O) - centered and thick
-                            <div className="h-3 w-3 bg-black rounded-full flex items-center justify-center" />
+                            // Old Yin (O) - centered and thinner
+                            <div className="h-6 w-6 bg-black border-1 border-white rounded-full flex items-center justify-center">
+                                <div className="h-3 w-3 bg-white rounded-full" />
+                            </div>
                         ) : (
-                            // Old Yang (X) - centered and thick
-                            <svg className="h-3 w-3 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
+                            // Old Yang (X) - centered and thinner
+                            <svg className="h-7 w-7 text-white" fill="none" stroke="#f3f4f6" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         )}
                     </div>
