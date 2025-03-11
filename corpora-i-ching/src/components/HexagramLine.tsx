@@ -28,7 +28,7 @@ const HexagramLine: React.FC<HexagramLineProps> = ({ digit, isChanging }) => {
                         {digit === '6' ? (
                             // Old Yin (O) - centered, black background, white center, white border
                             <div className="h-6 w-6 bg-black border-1 border-white rounded-full flex items-center justify-center">
-                                <div className="h-4 w-4 bg-white rounded-full" />
+                                <div className="h-5 w-5 bg-white rounded-full" />
                             </div>
                         ) : (
                             // Old Yang (X) - centered, black background, white X, white border
