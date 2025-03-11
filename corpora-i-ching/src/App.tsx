@@ -4,6 +4,10 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import NoReadingView from './components/NoReadingView';
 import ReadingView from './components/ReadingView';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Languages } from 'lucide-react';
 
 // Define interfaces
 export interface IChingLine {
@@ -33,18 +37,14 @@ export interface IChingHexagram {
     changing_lines: IChingLine[];
 }
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
     const [mode, setMode] = useState<'consultation' | 'browse'>('consultation');
     const [hasReading, setHasReading] = useState(false);
     const [hexs, setHexs] = useState<Hexs | null>(null);
     const [originalHex, setOriginalHex] = useState<IChingHexagram | null>(null);
     const [transformedHex, setTransformedHex] = useState<IChingHexagram | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [languages, setLanguages] = useState({
-        zh: true,
-        en: true,
-        es: false,
-    });
+    const { languages, setLanguages } = useLanguage();
 
     const handleNewReading = async () => {
         try {
@@ -92,6 +92,44 @@ const App: React.FC = () => {
                     <TabsTrigger value="consultation">Consultation</TabsTrigger>
                     <TabsTrigger value="browse">Browse</TabsTrigger>
                 </TabsList>
+                <div className="p-2">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" size="sm">
+                                <Languages className="h-4 w-4 mr-2" />
+                                Languages
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuLabel>Show Languages</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <Checkbox
+                                    checked={languages.zh}
+                                    onCheckedChange={(checked) => setLanguages({ ...languages, zh: !!checked })}
+                                    className="mr-2"
+                                />
+                                Chinese (ZH)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <Checkbox
+                                    checked={languages.en}
+                                    onCheckedChange={(checked) => setLanguages({ ...languages, en: !!checked })}
+                                    className="mr-2"
+                                />
+                                English (EN)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <Checkbox
+                                    checked={languages.es}
+                                    onCheckedChange={(checked) => setLanguages({ ...languages, es: !!checked })}
+                                    className="mr-2"
+                                />
+                                Spanish (ES)
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
             </Tabs>
 
             {/* Main Content */}
@@ -106,12 +144,10 @@ const App: React.FC = () => {
                                 originalHex={originalHex!}
                                 transformedHex={transformedHex}
                                 error={error}
-                                languages={languages}
-                                setLanguages={setLanguages}
                             />
                             <Button
                                 onClick={handleResetReading}
-                                className="fixed bottom-4 right-4 rounded-full w-14 h-14 bg-blue-600 text-white hover:bg-blue-700 shadow-lg"
+                                className="fixed bottom-4 right-4 rounded-full w-12 h-12 bg-blue-600 text-white hover:bg-blue-700 shadow-lg"
                             >
                                 +
                             </Button>
@@ -124,6 +160,14 @@ const App: React.FC = () => {
                 )}
             </div>
         </div>
+    );
+};
+
+const App: React.FC = () => {
+    return (
+        <LanguageProvider>
+            <AppContent />
+        </LanguageProvider>
     );
 };
 

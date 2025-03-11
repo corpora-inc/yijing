@@ -2,24 +2,18 @@ import React from 'react';
 import { Hexs, IChingHexagram } from '../App';
 import HexagramDisplay from './HexagramDisplay';
 import { Card } from '@/components/ui/card';
+// import { useLanguage } from '../context/LanguageContext';
 
 interface ReadingViewProps {
     hexs: Hexs;
     originalHex: IChingHexagram;
     transformedHex: IChingHexagram | null;
     error: string | null;
-    languages: { zh: boolean; en: boolean; es: boolean };
-    setLanguages: React.Dispatch<React.SetStateAction<{ zh: boolean; en: boolean; es: boolean }>>;
 }
 
-const ReadingView: React.FC<ReadingViewProps> = ({
-    hexs,
-    originalHex,
-    transformedHex,
-    error,
-    languages,
-    setLanguages,
-}) => {
+const ReadingView: React.FC<ReadingViewProps> = ({ hexs, originalHex, transformedHex, error }) => {
+    // const { languages } = useLanguage();
+
     return (
         <div className="w-full">
             {error ? (
@@ -30,16 +24,12 @@ const ReadingView: React.FC<ReadingViewProps> = ({
                         title="Original Hexagram"
                         hexs={hexs}
                         hexagram={originalHex}
-                        languages={languages}
-                        setLanguages={setLanguages}
                     />
                     {transformedHex && (
                         <HexagramDisplay
                             title="Transformed Hexagram"
                             hexs={hexs}
                             hexagram={transformedHex}
-                            languages={languages}
-                            setLanguages={setLanguages}
                         />
                     )}
                 </Card>

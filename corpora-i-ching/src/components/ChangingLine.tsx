@@ -1,12 +1,14 @@
 import React from 'react';
 import { IChingLine } from '../App';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ChangingLineProps {
     line: IChingLine;
-    languages: { zh: boolean; en: boolean; es: boolean };
 }
 
-const ChangingLine: React.FC<ChangingLineProps> = ({ line, languages }) => {
+const ChangingLine: React.FC<ChangingLineProps> = ({ line }) => {
+    const { languages } = useLanguage();
+
     return (
         <div className="space-y-1">
             <p className="font-semibold">Line {line.line_number}</p>
