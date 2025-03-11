@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
-import { invoke } from '@tauri-apps/api/core'
+import React, { useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { Button } from '@/components/ui/button'; // Import Shadcn Button
 
-// Define interfaces (copied from your original)
+// Define interfaces (unchanged)
 interface IChingLine {
     line_number: number;
     text_zh: string;
@@ -30,23 +31,18 @@ interface IChingHexagram {
 }
 
 const App: React.FC = () => {
-    // State to hold the hexagram output
     const [output, setOutput] = useState<string>('Click "New Reading" to generate a hexagram.');
 
-    // Handler for generating a new reading
     const handleNewReading = async () => {
         try {
-            // Invoke the Rust "build" command
             const hexagram = await invoke<Hexs>("build");
             console.log("Hexagram from build:", hexagram);
 
-            // Fetch original hexagram data
             const originalHexData = await invoke<IChingHexagram>("fetch_hexagram_data", {
                 bin: hexagram.binary,
             });
             console.log("Original hexagram data from DB:", originalHexData);
 
-            // Fetch transformed hexagram data if it exists
             let transformedHexData: IChingHexagram | null = null;
             if (hexagram.transformed_binary) {
                 transformedHexData = await invoke<IChingHexagram>("fetch_hexagram_data", {
@@ -55,7 +51,6 @@ const App: React.FC = () => {
                 console.log("Transformed hexagram data from DB:", transformedHexData);
             }
 
-            // Format output (same as your original)
             const formattedOutput = [
                 "Original Hexagram:",
                 ...hexagram.original,
@@ -98,7 +93,6 @@ const App: React.FC = () => {
                 ),
             ].join("\n");
 
-            // Update state with the formatted output
             setOutput(formattedOutput);
         } catch (error) {
             console.error("Failed to process hexagram:", error);
@@ -108,9 +102,9 @@ const App: React.FC = () => {
 
     return (
         <div>
-            <button id="new-reading" onClick={handleNewReading}>
+            <Button onClick={handleNewReading}>
                 New Reading
-            </button>
+            </Button>
             <pre id="hexagram-output">{output}</pre>
         </div>
     );
