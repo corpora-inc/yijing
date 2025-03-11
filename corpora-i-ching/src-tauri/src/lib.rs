@@ -6,140 +6,107 @@ use serde::Serialize;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Line {
-    StableYin,
-    StableYang,
-    ChangingYin,
-    ChangingYang,
+    OldYin,    // 6
+    YoungYang, // 7
+    YoungYin,  // 8
+    OldYang,   // 9
 }
 
+/// Represents a hexagram with a compact consultation code and binary data.
 #[derive(Serialize)]
 pub struct Hexs {
-    pub original: Vec<String>,
-    pub transformed: Option<Vec<String>>,
-    pub binary: String,
-    pub transformed_binary: Option<String>, // Add this field
+    pub consultation_code: String, // 6-digit code (666666 to 999999)
+    pub binary: String,            // Original binary (0s and 1s)
+    pub transformed_binary: Option<String>, // Optional transformed binary
 }
 
-/// Generates a random boolean with the given probability (0.0 to 1.0).
-fn custom_gen_bool(prob: f64) -> Result<bool, anyhow::Error> {
-    let mut buf: [u8; 4] = [0u8; 4];
-    getrandom::fill(&mut buf).map_err(|e: getrandom::Error| {
-        anyhow::anyhow!("Failed to generate random bytes: {:?}", e)
-    })?;
-    let x: u32 = u32::from_ne_bytes(buf);
-    let threshold: f64 = (u32::MAX as f64) * prob;
-    Ok(x < threshold as u32)
+/// Simulates a coin toss (3 for heads, 2 for tails).
+fn toss_coin() -> Result<u8, anyhow::Error> {
+    let mut buf: [u8; 1] = [0u8; 1];
+    getrandom::fill(&mut buf)
+        .map_err(|e| anyhow::anyhow!("Failed to generate random byte: {:?}", e))?;
+    Ok(if buf[0] % 2 == 0 { 2 } else { 3 }) // 50% chance for 2 or 3
 }
 
-/// Toss three coins to determine one line.
-fn toss() -> Result<Line, anyhow::Error> {
-    let tosses: [bool; 3] = [
-        custom_gen_bool(0.5)?,
-        custom_gen_bool(0.5)?,
-        custom_gen_bool(0.5)?,
-    ];
-    let sum: u8 = tosses.iter().map(|&coin| if coin { 3 } else { 2 }).sum();
+/// Generates a line based on three coin tosses with I Ching probabilities.
+fn toss_line() -> Result<Line, anyhow::Error> {
+    let tosses: [u8; 3] = [toss_coin()?, toss_coin()?, toss_coin()?];
+    let sum: u8 = tosses.iter().sum();
 
-    let line = match sum {
-        6 => Line::ChangingYin,
-        7 => Line::StableYang,
-        8 => Line::StableYin,
-        9 => Line::ChangingYang,
-        _ => {
-            return Err(anyhow::anyhow!(
-                "Invalid sum encountered: {} in {} at line {}",
-                sum,
-                file!(),
-                line!()
-            ))
-        }
-    };
-    Ok(line)
+    match sum {
+        6 => Ok(Line::OldYin),    // 2+2+2 = 6 (12.5%)
+        7 => Ok(Line::YoungYang), // 2+2+3 or similar (37.5%)
+        8 => Ok(Line::YoungYin),  // 3+3+2 or similar (37.5%)
+        9 => Ok(Line::OldYang),   // 3+3+3 = 9 (12.5%)
+        _ => Err(anyhow::anyhow!("Invalid sum: {}", sum)),
+    }
 }
 
-/// Assign a binary digit to each line.
-/// Yang (stable or changing) -> '1', Yin (stable or changing) -> '0'.
-/// Returns a 6-character string (with the bottom line as the least-significant digit).
-pub fn assign_bin(lines: &[Line]) -> String {
-    lines
+/// Generates a 6-digit consultation code from bottom to top.
+fn generate_consultation_code() -> Result<String, anyhow::Error> {
+    let lines: Vec<Line> = (0..6).map(|_| toss_line()).collect::<Result<Vec<_>, _>>()?;
+    Ok(lines
         .iter()
-        .map(|line: &Line| match line {
-            Line::StableYang | Line::ChangingYang => '1',
-            Line::StableYin | Line::ChangingYin => '0',
+        .map(|line| match line {
+            Line::OldYin => '6',
+            Line::YoungYang => '7',
+            Line::YoungYin => '8',
+            Line::OldYang => '9',
         })
-        .rev()
+        .collect())
+}
+
+/// Derives the original binary from the consultation code (bottom to top).
+fn original_binary(code: &str) -> String {
+    code.chars()
+        .map(|digit| match digit {
+            '6' => '0', // Old Yin → Yin (0)
+            '7' => '1', // Young Yang → Yang (1)
+            '8' => '0', // Young Yin → Yin (0)
+            '9' => '1', // Old Yang → Yang (1)
+            _ => unreachable!(),
+        })
         .collect()
 }
 
-/// Transforms a changing line into its stable counterpart.
-/// Stable lines are returned unchanged.
-fn transform(line: &Line) -> Line {
-    match line {
-        Line::ChangingYin => Line::StableYang,
-        Line::ChangingYang => Line::StableYin,
-        Line::StableYin => Line::StableYin,
-        Line::StableYang => Line::StableYang,
-    }
+/// Derives the transformed binary from the consultation code (bottom to top).
+fn transformed_binary(code: &str) -> String {
+    code.chars()
+        .map(|digit| match digit {
+            '6' => '1', // Old Yin → Yang (1)
+            '7' => '1', // Young Yang → Yang (1)
+            '8' => '0', // Young Yin → Yin (0)
+            '9' => '0', // Old Yang → Yin (0)
+            _ => unreachable!(),
+        })
+        .collect()
 }
 
 #[tauri::command]
 fn build() -> Result<Hexs, String> {
-    // Generate the original hexagram by calling toss() six times.
-    let original_hex: Vec<Line> = (0..6)
-        .map(|_| toss())
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|err: anyhow::Error| format!("Failed to generate hexagram lines: {:#?}", err))?;
+    // Generate the consultation code (6 digits, 6-9).
+    let consultation_code = generate_consultation_code().map_err(|e| e.to_string())?;
 
-    // --- Compute and log the binary for the original hexagram ---
-    let original_bin: String = assign_bin(&original_hex);
+    // Derive the original binary.
+    let original_bin = original_binary(&consultation_code);
     println!(
-        "Original hexagram lines in binary (bottom to top): {}",
-        original_bin
+        "Consultation code: {}, binary: {}",
+        consultation_code, original_bin
     );
 
-    let has_changes = original_hex
-        .iter()
-        .any(|line| matches!(line, Line::ChangingYin | Line::ChangingYang));
-
-    let (transformed_lines, transformed_binary) = if has_changes {
-        let stable_lines: Vec<Line> = original_hex.iter().map(|line| transform(line)).collect();
-        let transformed_bin = assign_bin(&stable_lines);
-        println!(
-            "Transformed hexagram lines in binary (bottom to top): {}",
-            transformed_bin
-        );
-
-        let lines = Some(
-            stable_lines
-                .iter()
-                .map(|line| match line {
-                    Line::StableYin => "——— ——— 8".to_string(),
-                    Line::StableYang => "——————— 7".to_string(),
-                    _ => unreachable!("Transformed hexagram should only contain stable lines"),
-                })
-                .collect(),
-        );
-
-        (lines, Some(transformed_bin))
+    // Derive the transformed binary if there are changing lines.
+    let transformed_bin = if consultation_code.contains('6') || consultation_code.contains('9') {
+        let transformed = transformed_binary(&consultation_code);
+        println!("Transformed binary: {}", transformed);
+        Some(transformed)
     } else {
-        (None, None)
+        None
     };
 
-    let original_lines: Vec<String> = original_hex
-        .iter()
-        .map(|line| match line {
-            Line::StableYin => "——— ——— 8".to_string(),
-            Line::StableYang => "——————— 7".to_string(),
-            Line::ChangingYin => "———O——— 6".to_string(),
-            Line::ChangingYang => "———X——— 9".to_string(),
-        })
-        .collect();
-
     Ok(Hexs {
-        original: original_lines,
-        transformed: transformed_lines,
+        consultation_code,
         binary: original_bin,
-        transformed_binary, // Set the field here
+        transformed_binary: transformed_bin,
     })
 }
 

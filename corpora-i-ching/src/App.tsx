@@ -18,10 +18,10 @@ export interface IChingLine {
 }
 
 export interface Hexs {
-    original: string[];
-    transformed?: string[];
-    binary: string;
-    transformed_binary?: string;
+    consultation_code: string;       // 6-digit code (666666 to 999999)
+    transformed_code: string | null; // Optional transformed code
+    binary: string;                 // 6-char binary (0s and 1s)
+    transformed_binary: string | null; // Optional transformed binary
 }
 
 export interface IChingHexagram {
