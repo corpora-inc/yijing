@@ -108,7 +108,6 @@ const App: React.FC = () => {
 
     return (
         <div>
-            <h1>I Ching Reader</h1>
             <button id="new-reading" onClick={handleNewReading}>
                 New Reading
             </button>
