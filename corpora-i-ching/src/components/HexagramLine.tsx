@@ -32,8 +32,8 @@ const HexagramLine: React.FC<HexagramLineProps> = ({ digit, isChanging }) => {
                             </div>
                         ) : (
                             // Old Yang (X) - centered and thinner
-                            <svg className="h-7 w-7 text-white" fill="none" stroke="#f3f4f6" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M6 18L18 6M6 6l12 12" />
+                            <svg className="h-8 w-6 text-white" fill="none" stroke="#f3f4f6" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="6" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         )}
                     </div>
