@@ -5,8 +5,7 @@ import NoReadingView from './components/NoReadingView';
 import ReadingView from './components/ReadingView';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { LanguageProvider } from './context/LanguageContext';
-import { Button } from '@/components/ui/button';
-import { Book, History, Search, Trash2 } from 'lucide-react'; // Added Trash2 icon
+import { Book, History, Search, Trash2 } from 'lucide-react';
 
 // Define interfaces
 export interface IChingLine {
@@ -157,8 +156,7 @@ const AppContent: React.FC = () => {
     const handleTabChange = (value: string) => {
         setMode(value as 'consultation' | 'browse' | 'history');
         if (value === 'consultation') {
-            handleResetReading();
-            handleNewReading('Untitled Reading');
+            handleResetReading(); // Always reset to NoReadingView when clicking Consultation tab
         }
     };
 
@@ -235,14 +233,6 @@ const AppContent: React.FC = () => {
 
             {/* Language Switcher FAB (Bottom-Right) */}
             <LanguageSwitcher />
-
-            {/* New Reading FAB (Top-Right) */}
-            <Button
-                onClick={handleResetReading}
-                className="fixed top-4 right-4 rounded-full w-12 h-12 bg-gray-800 text-white hover:bg-gray-700 shadow-lg z-10"
-            >
-                +
-            </Button>
         </div>
     );
 };
