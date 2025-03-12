@@ -13,6 +13,7 @@ export interface IChingLine {
     text_zh: string;
     text_en: string;
     text_es: string;
+    text_pinyin: string; // Added Pinyin for changing lines
 }
 
 export interface Hexs {
@@ -31,6 +32,7 @@ export interface IChingHexagram {
     judgment_zh: string;
     judgment_en: string;
     judgment_es: string;
+    judgment_pinyin: string; // Added Pinyin for judgments
     english_name: string;
     changing_lines: IChingLine[];
 }
@@ -126,7 +128,7 @@ const AppContent: React.FC = () => {
 
             {/* New Reading FAB (Top-Right) */}
             <Button
-                onClick={handleResetReading} // Changed to handleResetReading to navigate to NoReadingView
+                onClick={handleResetReading}
                 className="fixed top-4 right-4 rounded-full w-12 h-12 bg-gray-800 text-white hover:bg-gray-700 shadow-lg z-10"
             >
                 +

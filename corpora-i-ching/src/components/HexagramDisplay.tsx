@@ -8,12 +8,12 @@ import { useLanguage } from '../context/LanguageContext';
 interface HexagramDisplayProps {
     hexs: Hexs;
     hexagram: IChingHexagram;
-    isOriginal: boolean; // New prop to distinguish original vs. transformed
+    isOriginal: boolean;
 }
 
 const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOriginal }) => {
     const { languages } = useLanguage();
-    const showAnyLanguage = languages.zh || languages.en || languages.es;
+    const showAnyLanguage = languages.zh || languages.en || languages.es || languages.pinyin;
 
     // Get the original consultation code (bottom to top)
     const originalDigits = hexs.consultation_code.split('');
@@ -45,7 +45,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
                         key={idx}
                         digit={digit}
                         isChanging={displayChanging[idx]}
-                        originalDigit={originalDigits[originalDigits.length - 1 - idx]} // Pass original digit for indicator check
+                        originalDigit={originalDigits[originalDigits.length - 1 - idx]}
                     />
                 ))}
             </div>
@@ -59,6 +59,12 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
                     {languages.zh && hexagram.judgment_zh && (
                         <>
                             <p>{hexagram.judgment_zh}</p>
+                            {(languages.en || languages.es || languages.pinyin) && hexagram.judgment_pinyin && <hr className="border-t border-gray-200 opacity-50" />}
+                        </>
+                    )}
+                    {languages.pinyin && hexagram.judgment_pinyin && (
+                        <>
+                            <p>{hexagram.judgment_pinyin}</p>
                             {(languages.en || languages.es) && hexagram.judgment_en && <hr className="border-t border-gray-200 opacity-50" />}
                         </>
                     )}

@@ -37,6 +37,15 @@ const LanguageSwitcher: React.FC = () => {
                 </DropdownMenuItem>
                 <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                     <Checkbox
+                        checked={languages.pinyin}
+                        onCheckedChange={(checked) => !isLanguageDisabled('pinyin') && setLanguages({ ...languages, pinyin: !!checked })}
+                        className="mr-2"
+                        disabled={isLanguageDisabled('pinyin')}
+                    />
+                    Pinyin
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Checkbox
                         checked={languages.en}
                         onCheckedChange={(checked) => !isLanguageDisabled('en') && setLanguages({ ...languages, en: !!checked })}
                         className="mr-2"

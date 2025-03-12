@@ -15,6 +15,9 @@ const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
                 {languages.zh && '专注于你的问题，然后点击下方咨询易经。'}
             </p>
             <p className="mb-4 text-lg text-gray-700">
+                {languages.pinyin && 'Zhuānzhù yú nǐ de wèntí, ránhòu diǎnjī xiàfāng zīxún yìjīng.'}
+            </p>
+            <p className="mb-4 text-lg text-gray-700">
                 {languages.en && 'Concentrate on your question and click below to consult the I Ching.'}
             </p>
             <p className="mb-4 text-lg text-gray-700">
@@ -22,8 +25,9 @@ const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
             </p>
 
             <Button onClick={onNewReading}>
-                {languages.zh && '新咨询'}
-                {languages.en && 'New Reading'}
+                {languages.zh && '新咨询 '}
+                {languages.pinyin && 'Xīn zīxún '}
+                {languages.en && 'New Reading '}
                 {languages.es && 'Nueva Lectura'}
             </Button>
         </div>

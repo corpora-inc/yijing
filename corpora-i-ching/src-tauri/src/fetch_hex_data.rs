@@ -8,6 +8,7 @@ pub struct IChingLine {
     pub text_zh: String,
     pub text_en: String,
     pub text_es: String,
+    pub text_pinyin: String,
 }
 
 #[derive(Serialize)]
@@ -20,6 +21,7 @@ pub struct IChingHexagram {
     pub judgment_zh: String,
     pub judgment_en: String,
     pub judgment_es: String,
+    pub judgment_pinyin: String,
     pub english_name: String,
     pub changing_lines: Vec<IChingLine>,
 }
@@ -29,7 +31,7 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
     let conn: Connection = Connection::open(db_path)?;
     // Fetch the hexagram data from the iching_hexagram table.
     let hexagram = conn.query_row(
-        "SELECT id, number, chinese_name, pinyin, binary, judgment_zh, judgment_en, judgment_es, english_name
+        "SELECT id, number, chinese_name, pinyin, binary, judgment_zh, judgment_en, judgment_es, english_name, judgment_pinyin
          FROM iching_hexagram
          WHERE binary = ?1",
         params![bin],
@@ -44,6 +46,7 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
                 judgment_en: row.get(6)?,
                 judgment_es: row.get(7)?,
                 english_name: row.get(8)?,
+                judgment_pinyin: row.get(9)?,
                 // Initialize with an empty vector; we will fill this in below.
                 changing_lines: Vec::new(),
             })
@@ -52,7 +55,7 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
 
     // Fetch the associated line texts from the iching_line table.
     let mut stmt: rusqlite::Statement<'_> = conn.prepare(
-        "SELECT line_number, text_zh, text_en, text_es
+        "SELECT line_number, text_zh, text_en, text_es, text_pinyin
          FROM iching_line
          WHERE hexagram_id = ?1
          ORDER BY line_number ASC",
@@ -63,6 +66,7 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
             text_zh: row.get(1)?,
             text_en: row.get(2)?,
             text_es: row.get(3)?,
+            text_pinyin: row.get(4)?,
         })
     })?;
 

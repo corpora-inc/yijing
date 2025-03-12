@@ -1,23 +1,26 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+// src/context/LanguageContext.tsx
+import React, { createContext, useContext, useState } from 'react';
 
 interface LanguageState {
     zh: boolean;
     en: boolean;
     es: boolean;
+    pinyin: boolean; // Added Pinyin
 }
 
-interface LanguageContextType {
+interface LanguageContextProps {
     languages: LanguageState;
     setLanguages: React.Dispatch<React.SetStateAction<LanguageState>>;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [languages, setLanguages] = useState<LanguageState>({
         zh: true,
         en: true,
         es: false,
+        pinyin: false, // Default Pinyin off
     });
 
     return (
@@ -25,12 +28,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             {children}
         </LanguageContext.Provider>
     );
-}
+};
 
-export function useLanguage() {
+export const useLanguage = () => {
     const context = useContext(LanguageContext);
     if (!context) {
         throw new Error('useLanguage must be used within a LanguageProvider');
     }
     return context;
-}
+};
