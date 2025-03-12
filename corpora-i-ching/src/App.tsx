@@ -5,7 +5,7 @@ import NoReadingView from './components/NoReadingView';
 import ReadingView from './components/ReadingView';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { LanguageProvider } from './context/LanguageContext';
-import { Button } from '@/components/ui/button'; // Added missing import
+import { Button } from '@/components/ui/button';
 
 // Define interfaces
 export interface IChingLine {
@@ -126,7 +126,7 @@ const AppContent: React.FC = () => {
 
             {/* New Reading FAB (Top-Right) */}
             <Button
-                onClick={handleNewReading}
+                onClick={handleResetReading} // Changed to handleResetReading to navigate to NoReadingView
                 className="fixed top-4 right-4 rounded-full w-12 h-12 bg-gray-800 text-white hover:bg-gray-700 shadow-lg z-10"
             >
                 +
