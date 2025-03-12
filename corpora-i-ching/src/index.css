@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f3f4f6;
+    /* Can adjust later per your note */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+#root {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 320px;
+    /* Reduced to fit 326px screens */
+    margin: 0 auto;
+    padding: 0.25rem;
+    /* Tighter padding for small screens */
+}
+
+/* Responsive adjustments */
+@media (min-width: 375px) {
+    #root {
+        max-width: 375px;
+        /* Slightly wider for modern phones */
+        padding: 0.5rem;
+    }
+}
+
+@media (min-width: 640px) {
+    #root {
+        max-width: 640px;
+        padding: 0.75rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    #root {
+        max-width: 800px;
+        padding: 1.5rem;
+    }
+}
+
+/* Ensure FAB doesn’t overlap on small screens */
+.fixed {
+    z-index: 10;
+    bottom: 0.5rem;
+    /* Even closer for very small screens */
+    right: 0.5rem;
+}
+
+button.fixed {
+    width: 3rem;
+    /* Smaller FAB for narrow screens */
+    height: 3rem;
+    font-size: 1.25rem;
+    /* Adjusted + size */
+}
+
+/* Text and card adjustments for mobile */
+h2 {
+    font-size: 1rem;
+    /* Smaller headers for very narrow screens */
+}
+
+pre {
+    background-color: #e5e7eb;
+    padding: 0.25rem;
+    font-size: 0.75rem;
+    /* Even smaller text for narrow screens */
+    border-radius: 0.25rem;
+    overflow-x: auto;
+    /* Allow horizontal scroll if lines are too wide */
+}
+
+.space-y-6>* {
+    margin-bottom: 0.5rem;
+    /* Even tighter spacing */
+}
+
+@media (min-width: 375px) {
+    h2 {
+        font-size: 1.125rem;
+    }
+
+    pre {
+        font-size: 0.875rem;
+    }
+
+    .space-y-6>* {
+        margin-bottom: 0.75rem;
+    }
+}
+
+@media (min-width: 640px) {
+    h2 {
+        font-size: 1.25rem;
+    }
+
+    pre {
+        padding: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .space-y-6>* {
+        margin-bottom: 1.5rem;
+    }
+}

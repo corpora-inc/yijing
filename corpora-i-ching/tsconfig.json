@@ -1,5 +1,11 @@
 {
   "compilerOptions": {
+    "baseUrl": ".", // Base directory for resolving paths
+    "paths": {
+      "@/*": [
+        "src/*"
+      ] // Alias '@/' to 'src/'
+    },
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
