@@ -18,10 +18,10 @@ export interface IChingLine {
 }
 
 export interface Hexs {
-    consultation_code: string;       // 6-digit code (666666 to 999999)
-    transformed_code: string | null; // Optional transformed code
-    binary: string;                 // 6-char binary (0s and 1s)
-    transformed_binary: string | null; // Optional transformed binary
+    consultation_code: string;
+    transformed_code: string | null;
+    binary: string;
+    transformed_binary: string | null;
 }
 
 export interface IChingHexagram {
@@ -37,6 +37,60 @@ export interface IChingHexagram {
     changing_lines: IChingLine[];
 }
 
+// Language Switcher Component
+const LanguageSwitcher: React.FC = () => {
+    const { languages, setLanguages } = useLanguage();
+
+    // Count selected languages
+    const selectedLanguagesCount = Object.values(languages).filter(Boolean).length;
+
+    // Disable unselecting if only one language is selected
+    const isLanguageDisabled = (langKey: keyof typeof languages) => {
+        return selectedLanguagesCount === 1 && languages[langKey];
+    };
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                <Button className="fixed bottom-4 right-4 rounded-full w-12 h-12 bg-black text-white hover:bg-gray-800 shadow-lg">
+                    <Languages className="h-6 w-6" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <DropdownMenuLabel>Show Languages</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Checkbox
+                        checked={languages.zh}
+                        onCheckedChange={(checked) => !isLanguageDisabled('zh') && setLanguages({ ...languages, zh: !!checked })}
+                        className="mr-2"
+                        disabled={isLanguageDisabled('zh')}
+                    />
+                    Chinese (ZH)
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Checkbox
+                        checked={languages.en}
+                        onCheckedChange={(checked) => !isLanguageDisabled('en') && setLanguages({ ...languages, en: !!checked })}
+                        className="mr-2"
+                        disabled={isLanguageDisabled('en')}
+                    />
+                    English (EN)
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    <Checkbox
+                        checked={languages.es}
+                        onCheckedChange={(checked) => !isLanguageDisabled('es') && setLanguages({ ...languages, es: !!checked })}
+                        className="mr-2"
+                        disabled={isLanguageDisabled('es')}
+                    />
+                    Spanish (ES)
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
+
 const AppContent: React.FC = () => {
     const [mode, setMode] = useState<'consultation' | 'browse'>('consultation');
     const [hasReading, setHasReading] = useState(false);
@@ -44,7 +98,6 @@ const AppContent: React.FC = () => {
     const [originalHex, setOriginalHex] = useState<IChingHexagram | null>(null);
     const [transformedHex, setTransformedHex] = useState<IChingHexagram | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const { languages, setLanguages } = useLanguage();
 
     const handleNewReading = async () => {
         try {
@@ -84,52 +137,22 @@ const AppContent: React.FC = () => {
         setError(null);
     };
 
+    const handleTabChange = (value: string) => {
+        setMode(value as 'consultation' | 'browse');
+        if (value === 'consultation') {
+            handleResetReading();
+            handleNewReading();
+        }
+    };
+
     return (
         <div className="flex flex-col flex-1 h-screen">
             {/* Navigation Tabs */}
-            <Tabs value={mode} onValueChange={(value) => setMode(value as 'consultation' | 'browse')} className="w-full">
+            <Tabs value={mode} onValueChange={handleTabChange} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="consultation">Consultation</TabsTrigger>
                     <TabsTrigger value="browse">Browse</TabsTrigger>
                 </TabsList>
-                <div className="p-2">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                                <Languages className="h-4 w-4 mr-2" />
-                                Languages
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            <DropdownMenuLabel>Show Languages</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                <Checkbox
-                                    checked={languages.zh}
-                                    onCheckedChange={(checked) => setLanguages({ ...languages, zh: !!checked })}
-                                    className="mr-2"
-                                />
-                                Chinese (ZH)
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                <Checkbox
-                                    checked={languages.en}
-                                    onCheckedChange={(checked) => setLanguages({ ...languages, en: !!checked })}
-                                    className="mr-2"
-                                />
-                                English (EN)
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                <Checkbox
-                                    checked={languages.es}
-                                    onCheckedChange={(checked) => setLanguages({ ...languages, es: !!checked })}
-                                    className="mr-2"
-                                />
-                                Spanish (ES)
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
             </Tabs>
 
             {/* Main Content */}
@@ -145,12 +168,7 @@ const AppContent: React.FC = () => {
                                 transformedHex={transformedHex}
                                 error={error}
                             />
-                            <Button
-                                onClick={handleResetReading}
-                                className="fixed bottom-4 right-4 rounded-full w-12 h-12 bg-blue-600 text-white hover:bg-blue-700 shadow-lg"
-                            >
-                                +
-                            </Button>
+                            <LanguageSwitcher />
                         </div>
                     )
                 ) : (
