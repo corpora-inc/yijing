@@ -6,12 +6,12 @@ import { CardContent } from '@/components/ui/card';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HexagramDisplayProps {
-    title: string;
+    title: string; // No longer used for "Original" or "Transformed"
     hexs: Hexs;
     hexagram: IChingHexagram;
 }
 
-const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram }) => {
+const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram }) => {
     const { languages } = useLanguage();
     const showAnyLanguage = languages.zh || languages.en || languages.es;
 
@@ -29,10 +29,10 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
         : [];
 
     // Determine which digits to use and track changing lines
-    const digits = title.includes('Original') ? originalDigits : transformedDigits;
-    const isChangingArray = title.includes('Original')
-        ? originalDigits.map(digit => digit === '6' || digit === '9')
-        : Array(digits.length).fill(false); // No changing indicators in transformed
+    const digits = hexs.transformed_binary ? transformedDigits : originalDigits;
+    const isChangingArray = hexs.transformed_binary
+        ? Array(digits.length).fill(false) // No changing indicators in transformed
+        : originalDigits.map(digit => digit === '6' || digit === '9');
 
     // Reverse for display (top line first)
     const displayLines = digits.slice().reverse();
@@ -40,7 +40,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
 
     return (
         <CardContent className="space-y-4 flex flex-col items-center">
-            <h2 className="text-xl font-semibold text-center">{title}</h2>
+            <span className="text-sm text-gray-500 mb-2">{hexagram.number}</span> {/* Subtle hex number */}
             <div className="flex flex-col items-center">
                 {displayLines.map((digit, idx) => (
                     <HexagramLine
@@ -53,7 +53,6 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
             <div className="text-center space-y-2">
                 <h1 className="text-5xl font-bold text-gray-800">{hexagram.chinese_name}</h1>
                 <p className="text-xl italic text-gray-600">({hexagram.pinyin})</p>
-                {languages.en && <p className="text-lg">{hexagram.english_name}</p>}
             </div>
             {showAnyLanguage && (
                 <div className="space-y-2 w-full">
@@ -64,7 +63,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
                     {languages.es && <p className="text-center">{hexagram.judgment_es}</p>}
                 </div>
             )}
-            {title.includes('Original') && hexagram.changing_lines.length > 0 && showAnyLanguage && (
+            {!hexs.transformed_binary && hexagram.changing_lines.length > 0 && showAnyLanguage && (
                 <div className="space-y-2 w-full">
                     <h3 className="text-lg font-medium text-center mt-4">Changing Lines</h3>
                     {hexagram.changing_lines.map((line) => (

@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
 import NoReadingView from './components/NoReadingView';
 import ReadingView from './components/ReadingView';
-import { LanguageProvider, useLanguage } from './context/LanguageContext';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Languages } from 'lucide-react';
+import LanguageSwitcher from './components/LanguageSwitcher';
+import { LanguageProvider } from './context/LanguageContext';
 
 // Define interfaces
 export interface IChingLine {
@@ -36,60 +33,6 @@ export interface IChingHexagram {
     english_name: string;
     changing_lines: IChingLine[];
 }
-
-// Language Switcher Component
-const LanguageSwitcher: React.FC = () => {
-    const { languages, setLanguages } = useLanguage();
-
-    // Count selected languages
-    const selectedLanguagesCount = Object.values(languages).filter(Boolean).length;
-
-    // Disable unselecting if only one language is selected
-    const isLanguageDisabled = (langKey: keyof typeof languages) => {
-        return selectedLanguagesCount === 1 && languages[langKey];
-    };
-
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button className="fixed bottom-4 right-4 rounded-full w-12 h-12 bg-black text-white hover:bg-gray-800 shadow-lg">
-                    <Languages className="h-6 w-6" />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                <DropdownMenuLabel>Show Languages</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Checkbox
-                        checked={languages.zh}
-                        onCheckedChange={(checked) => !isLanguageDisabled('zh') && setLanguages({ ...languages, zh: !!checked })}
-                        className="mr-2"
-                        disabled={isLanguageDisabled('zh')}
-                    />
-                    Chinese (ZH)
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Checkbox
-                        checked={languages.en}
-                        onCheckedChange={(checked) => !isLanguageDisabled('en') && setLanguages({ ...languages, en: !!checked })}
-                        className="mr-2"
-                        disabled={isLanguageDisabled('en')}
-                    />
-                    English (EN)
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    <Checkbox
-                        checked={languages.es}
-                        onCheckedChange={(checked) => !isLanguageDisabled('es') && setLanguages({ ...languages, es: !!checked })}
-                        className="mr-2"
-                        disabled={isLanguageDisabled('es')}
-                    />
-                    Spanish (ES)
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
-};
 
 const AppContent: React.FC = () => {
     const [mode, setMode] = useState<'consultation' | 'browse'>('consultation');
