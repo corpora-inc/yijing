@@ -6,19 +6,19 @@ import { CardContent } from '@/components/ui/card';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HexagramDisplayProps {
-    title: string; // Revert to using title for original/transformed distinction
     hexs: Hexs;
     hexagram: IChingHexagram;
+    isOriginal: boolean; // New prop to distinguish original vs. transformed
 }
 
-const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram }) => {
+const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOriginal }) => {
     const { languages } = useLanguage();
     const showAnyLanguage = languages.zh || languages.en || languages.es;
 
     // Get the original consultation code (bottom to top)
     const originalDigits = hexs.consultation_code.split('');
 
-    // For the transformed hexagram, map to the transformed state but preserve changing info
+    // For the transformed hexagram, map to the transformed state
     const transformedDigits = hexs.transformed_binary
         ? hexs.transformed_binary.split('').map((_bit, idx) => {
             const origDigit = hexs.consultation_code[idx];
@@ -28,25 +28,24 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
         })
         : [];
 
-    // Determine which digits to use and track changing lines
-    const digits = title.includes('Original') ? originalDigits : transformedDigits;
-    const isChangingArray = title.includes('Original')
-        ? originalDigits.map(digit => digit === '6' || digit === '9')
-        : Array(digits.length).fill(false); // No changing indicators in transformed
+    // Use transformed digits for display, original for changing detection
+    const displayDigits = isOriginal ? originalDigits : transformedDigits;
+    const isChangingArray = originalDigits.map(digit => digit === '6' || digit === '9'); // Always based on original
 
     // Reverse for display (top line first)
-    const displayLines = digits.slice().reverse();
+    const displayLines = displayDigits.slice().reverse();
     const displayChanging = isChangingArray.slice().reverse();
 
     return (
         <CardContent className="space-y-4 flex flex-col items-center">
-            <h2 className="text-xl font-semibold">{title}</h2>
+            <span className="text-sm text-gray-500 mb-2">{hexagram.number}</span> {/* Subtle hex number */}
             <div className="flex flex-col items-center">
                 {displayLines.map((digit, idx) => (
                     <HexagramLine
                         key={idx}
                         digit={digit}
                         isChanging={displayChanging[idx]}
+                        originalDigit={originalDigits[originalDigits.length - 1 - idx]} // Pass original digit for indicator check
                     />
                 ))}
             </div>
@@ -72,7 +71,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
                     {languages.es && hexagram.judgment_es && <p>{hexagram.judgment_es}</p>}
                 </div>
             )}
-            {title.includes('Original') && hexagram.changing_lines.length > 0 && showAnyLanguage && (
+            {isOriginal && hexagram.changing_lines.length > 0 && showAnyLanguage && (
                 <div className="space-y-2">
                     {hexagram.changing_lines.map((line) => (
                         <ChangingLine key={line.line_number} line={line} />
