@@ -13,8 +13,8 @@ const ReadingView: React.FC<ReadingViewProps> = ({ hexs, originalHex, transforme
     return (
         <div className="flex flex-col items-center w-full h-full p-4 space-y-6">
             {error && <p className="text-red-500 text-center">{error}</p>}
-            <HexagramDisplay hexs={hexs} hexagram={originalHex} />
-            {transformedHex && <HexagramDisplay hexs={hexs} hexagram={transformedHex} />}
+            <HexagramDisplay title="Original" hexs={hexs} hexagram={originalHex} />
+            {transformedHex && <HexagramDisplay title="Transformed" hexs={hexs} hexagram={transformedHex} />}
         </div>
     );
 };
