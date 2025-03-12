@@ -6,7 +6,6 @@ import { CardContent } from '@/components/ui/card';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HexagramDisplayProps {
-    title: string; // No longer used for "Original" or "Transformed"
     hexs: Hexs;
     hexagram: IChingHexagram;
 }
@@ -15,7 +14,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram }) => 
     const { languages } = useLanguage();
     const showAnyLanguage = languages.zh || languages.en || languages.es;
 
-    // Get the original consultation code (bottom to top)
+    // Get the original consultation code (bottom to top) for determining changing lines
     const originalDigits = hexs.consultation_code.split('');
 
     // For the transformed hexagram, map to the transformed state without changing indicators
@@ -30,9 +29,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram }) => 
 
     // Determine which digits to use and track changing lines
     const digits = hexs.transformed_binary ? transformedDigits : originalDigits;
-    const isChangingArray = hexs.transformed_binary
-        ? Array(digits.length).fill(false) // No changing indicators in transformed
-        : originalDigits.map(digit => digit === '6' || digit === '9');
+    const isChangingArray = originalDigits.map(digit => digit === '6' || digit === '9'); // Always use original digits for changing detection
 
     // Reverse for display (top line first)
     const displayLines = digits.slice().reverse();
@@ -63,7 +60,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram }) => 
                     {languages.es && <p className="text-center">{hexagram.judgment_es}</p>}
                 </div>
             )}
-            {!hexs.transformed_binary && hexagram.changing_lines.length > 0 && showAnyLanguage && (
+            {hexs.transformed_binary && hexagram.changing_lines.length > 0 && showAnyLanguage && (
                 <div className="space-y-2 w-full">
                     <h3 className="text-lg font-medium text-center mt-4">Changing Lines</h3>
                     {hexagram.changing_lines.map((line) => (

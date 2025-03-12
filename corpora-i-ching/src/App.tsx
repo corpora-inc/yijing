@@ -5,6 +5,7 @@ import NoReadingView from './components/NoReadingView';
 import ReadingView from './components/ReadingView';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { LanguageProvider } from './context/LanguageContext';
+import { Button } from '@/components/ui/button'; // Added missing import
 
 // Define interfaces
 export interface IChingLine {
@@ -89,7 +90,7 @@ const AppContent: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col flex-1 h-screen">
+        <div className="flex flex-col flex-1 h-screen relative">
             {/* Navigation Tabs */}
             <Tabs value={mode} onValueChange={handleTabChange} className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
@@ -111,7 +112,6 @@ const AppContent: React.FC = () => {
                                 transformedHex={transformedHex}
                                 error={error}
                             />
-                            <LanguageSwitcher />
                         </div>
                     )
                 ) : (
@@ -120,6 +120,17 @@ const AppContent: React.FC = () => {
                     </div>
                 )}
             </div>
+
+            {/* Language Switcher FAB (Bottom-Right) */}
+            <LanguageSwitcher />
+
+            {/* New Reading FAB (Top-Right) */}
+            <Button
+                onClick={handleNewReading}
+                className="fixed top-4 right-4 rounded-full w-12 h-12 bg-gray-800 text-white hover:bg-gray-700 shadow-lg z-10"
+            >
+                +
+            </Button>
         </div>
     );
 };
