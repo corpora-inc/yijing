@@ -1,5 +1,6 @@
 use rusqlite::{params, Connection, Result};
 use serde::Serialize;
+use std::fs;
 use tauri::{AppHandle, Manager};
 
 #[derive(Serialize)]
@@ -80,33 +81,40 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
 
 #[tauri::command]
 pub async fn fetch_hexagram_data(bin: String, app: AppHandle) -> Result<IChingHexagram, String> {
-    // In Tauri v2, use the resource resolver from the app handle
     let resource_path = app
         .path()
         .resource_dir()
         .map_err(|e| format!("Failed to get resource directory: {}", e))?
         .join("resources/db.sqlite3");
+    println!("Resolved resource path: {}", resource_path.display());
 
-    // Log the resolved path for debugging
-    println!("Resolved database path: {}", resource_path.display());
+    let db_path_str = if resource_path.to_string_lossy().starts_with("asset://") {
+        let data_dir = app
+            .path()
+            .app_data_dir()
+            .map_err(|e| format!("Failed to get app data dir: {}", e))?;
+        let db_path = data_dir.join("db.sqlite3");
+        if !db_path.exists() {
+            println!(
+                "DB not found at {}, embedding from binary",
+                db_path.display()
+            );
+            let db_bytes = include_bytes!("../resources/db.sqlite3"); // From src-tauri/src/
+            fs::create_dir_all(&data_dir)
+                .map_err(|e| format!("Failed to create data dir: {}", e))?;
+            fs::write(&db_path, db_bytes).map_err(|e| format!("Failed to write DB: {}", e))?;
+            println!("Embedded DB to: {}", db_path.display());
+        } else {
+            println!("DB already exists at: {}", db_path.display());
+        }
+        db_path.to_string_lossy().to_string()
+    } else {
+        if !resource_path.exists() {
+            return Err(format!("DB file not found at: {}", resource_path.display()));
+        }
+        resource_path.to_string_lossy().to_string()
+    };
 
-    // Check if the file exists
-    if !resource_path.exists() {
-        return Err(format!(
-            "Database file not found at: {}",
-            resource_path.display()
-        ));
-    }
-
-    // Convert path to string for the database function
-    let db_path = resource_path.to_string_lossy().to_string();
-
-    get_hexagram_by_binary(&db_path, &bin).map_err(|err: rusqlite::Error| {
-        format!(
-            "Database error: {:#?}\nOccurred in file '{}' at line {}",
-            err,
-            file!(),
-            line!()
-        )
-    })
+    println!("Using DB at: {}", db_path_str);
+    get_hexagram_by_binary(&db_path_str, &bin).map_err(|err| format!("Database error: {:?}", err))
 }

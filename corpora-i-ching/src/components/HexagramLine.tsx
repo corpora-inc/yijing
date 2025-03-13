@@ -9,7 +9,7 @@ interface HexagramLineProps {
 const HexagramLine: React.FC<HexagramLineProps> = ({ digit, isChanging, originalDigit }) => {
     const isBroken = digit === '6' || digit === '8'; // Yin lines (broken) based on display digit
 
-    console.log('HexagramLine', { digit, isChanging, originalDigit, isBroken });
+    // console.log('HexagramLine', { digit, isChanging, originalDigit, isBroken });
 
     return (
         <div className="flex items-center justify-center mb-2 relative">

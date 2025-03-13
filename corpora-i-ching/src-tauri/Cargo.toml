@@ -22,3 +22,6 @@ serde_json = "1"
 getrandom = "0.3.1"
 rusqlite = { version = "0.34.0", features = ["bundled"] }
 anyhow = "1.0.97"
+tauri-plugin-log = "2.3.1"
+log = "0.4.26"
+android_logger = "0.15.0"

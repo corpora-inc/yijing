@@ -3,6 +3,7 @@ mod fetch_hex_data;
 use crate::fetch_hex_data::fetch_hexagram_data;
 use getrandom;
 use serde::Serialize;
+use tauri_plugin_log::{Builder as LogBuilder, Target, TargetKind};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Line {
@@ -145,6 +146,12 @@ fn rehydrate_reading(consultation_code: String) -> Result<Hexs, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(
+            LogBuilder::new()
+                .targets([Target::new(TargetKind::Stdout)]) // Only stdout for now
+                .level(log::LevelFilter::Info) // Match the frontend 'info' level
+                .build(),
+        )
         .invoke_handler(tauri::generate_handler![
             generate_reading,
             rehydrate_reading,

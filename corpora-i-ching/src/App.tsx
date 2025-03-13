@@ -6,6 +6,8 @@ import ReadingView from './components/ReadingView';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { LanguageProvider } from './context/LanguageContext';
 import { Book, History, Search, Trash2 } from 'lucide-react';
+import { info } from '@tauri-apps/plugin-log'; // Add this import
+
 
 // Define interfaces
 export interface IChingLine {
@@ -73,8 +75,9 @@ const AppContent: React.FC = () => {
 
     const handleNewReading = async (title: string) => {
         try {
+            info("generate_reading")
             const hexagram = await invoke<Hexs>("generate_reading");
-            console.log("Hexagram from generate_reading:", hexagram);
+            info("Hexagram from generate_reading: " + JSON.stringify(hexagram));
 
             const originalHexData = await invoke<IChingHexagram>("fetch_hexagram_data", {
                 bin: hexagram.binary,
@@ -163,8 +166,9 @@ const AppContent: React.FC = () => {
     return (
         <div className="flex flex-col flex-1 h-screen relative">
             {/* Navigation Tabs */}
+            {/* Make these tabs much bigger and more pronounced */}
             <Tabs value={mode} onValueChange={handleTabChange} className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-3 gap-0">
                     <TabsTrigger value="consultation">
                         <Book className="h-6 w-6" />
                     </TabsTrigger>
