@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "corpora-i-ching",
+        "title": "Yìjīng",
         "width": 800,
         "height": 600
       }

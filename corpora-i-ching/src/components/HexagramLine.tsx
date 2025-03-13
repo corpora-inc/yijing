@@ -9,6 +9,8 @@ interface HexagramLineProps {
 const HexagramLine: React.FC<HexagramLineProps> = ({ digit, isChanging, originalDigit }) => {
     const isBroken = digit === '6' || digit === '8'; // Yin lines (broken) based on display digit
 
+    console.log('HexagramLine', { digit, isChanging, originalDigit, isBroken });
+
     return (
         <div className="flex items-center justify-center mb-2 relative">
             {/* Line Display */}
@@ -24,7 +26,7 @@ const HexagramLine: React.FC<HexagramLineProps> = ({ digit, isChanging, original
                     // Solid line (Yang)
                     <div className="h-3 w-44 bg-black rounded-none transition-all duration-300" />
                 )}
-                {isChanging && (
+                {isChanging && digit == originalDigit && (
                     <div className="absolute top-[6px] transform -translate-y-1/2 flex items-center justify-center z-10">
                         {originalDigit === '6' ? (
                             // Old Yin (O) - centered, black background, white center, white border

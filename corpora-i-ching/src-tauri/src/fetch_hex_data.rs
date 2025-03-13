@@ -29,7 +29,6 @@ pub struct IChingHexagram {
 /// Query the database by the binary representation of the hexagram.
 pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram> {
     let conn: Connection = Connection::open(db_path)?;
-    // Fetch the hexagram data from the iching_hexagram table.
     let hexagram = conn.query_row(
         "SELECT id, number, chinese_name, pinyin, binary, judgment_zh, judgment_en, judgment_es, english_name, judgment_pinyin
          FROM iching_hexagram
@@ -47,13 +46,11 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
                 judgment_es: row.get(7)?,
                 english_name: row.get(8)?,
                 judgment_pinyin: row.get(9)?,
-                // Initialize with an empty vector; we will fill this in below.
                 changing_lines: Vec::new(),
             })
         },
     )?;
 
-    // Fetch the associated line texts from the iching_line table.
     let mut stmt: rusqlite::Statement<'_> = conn.prepare(
         "SELECT line_number, text_zh, text_en, text_es, text_pinyin
          FROM iching_line
@@ -75,7 +72,6 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
         changing_lines.push(line_result?);
     }
 
-    // Return the hexagram with its line data.
     Ok(IChingHexagram {
         changing_lines,
         ..hexagram
@@ -83,21 +79,29 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
 }
 
 #[tauri::command]
-pub fn fetch_hexagram_data(bin: String, app: AppHandle) -> Result<IChingHexagram, String> {
-    let db_path: std::path::PathBuf = app
+pub async fn fetch_hexagram_data(bin: String, app: AppHandle) -> Result<IChingHexagram, String> {
+    // In Tauri v2, use the resource resolver from the app handle
+    let resource_path = app
         .path()
-        .resolve("resources/db.sqlite3", tauri::path::BaseDirectory::Resource)
-        .map_err(|e: tauri::Error| format!("Failed to resolve database path: {}", e))?;
+        .resource_dir()
+        .map_err(|e| format!("Failed to get resource directory: {}", e))?
+        .join("resources/db.sqlite3");
 
     // Log the resolved path for debugging
-    println!("Resolved database path: {}", db_path.display());
+    println!("Resolved database path: {}", resource_path.display());
 
-    // Check if the file exists, and panic if it doesn’t (for dev-time clarity)
-    if !db_path.exists() {
-        panic!("Database file not found at: {}", db_path.display());
+    // Check if the file exists
+    if !resource_path.exists() {
+        return Err(format!(
+            "Database file not found at: {}",
+            resource_path.display()
+        ));
     }
 
-    get_hexagram_by_binary(&db_path.to_string_lossy(), &bin).map_err(|err: rusqlite::Error| {
+    // Convert path to string for the database function
+    let db_path = resource_path.to_string_lossy().to_string();
+
+    get_hexagram_by_binary(&db_path, &bin).map_err(|err: rusqlite::Error| {
         format!(
             "Database error: {:#?}\nOccurred in file '{}' at line {}",
             err,
