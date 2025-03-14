@@ -3,6 +3,7 @@ mod fetch_hex_data;
 use crate::fetch_hex_data::fetch_hexagram_data;
 use getrandom;
 use serde::Serialize;
+use tauri_plugin_log::{Builder as LogBuilder, Target, TargetKind};
 
 #[derive(Debug, Clone, Copy)]
 pub enum Line {
@@ -82,8 +83,9 @@ fn transformed_binary(code: &str) -> String {
         .collect()
 }
 
+/// Generates a new random reading.
 #[tauri::command]
-fn build() -> Result<Hexs, String> {
+fn generate_reading() -> Result<Hexs, String> {
     // Generate the consultation code (6 digits, 6-9).
     let consultation_code = generate_consultation_code().map_err(|e| e.to_string())?;
 
@@ -110,10 +112,51 @@ fn build() -> Result<Hexs, String> {
     })
 }
 
+/// Rehydrates a reading from a given consultation_code.
+#[tauri::command]
+fn rehydrate_reading(consultation_code: String) -> Result<Hexs, String> {
+    // Validate the consultation_code length and characters
+    if consultation_code.len() != 6 || !consultation_code.chars().all(|c| c >= '6' && c <= '9') {
+        return Err("Invalid consultation code: must be 6 digits (6-9)".to_string());
+    }
+
+    // Derive the original binary.
+    let original_bin = original_binary(&consultation_code);
+    println!(
+        "Rehydrated consultation code: {}, binary: {}",
+        consultation_code, original_bin
+    );
+
+    // Derive the transformed binary if there are changing lines.
+    let transformed_bin = if consultation_code.contains('6') || consultation_code.contains('9') {
+        let transformed = transformed_binary(&consultation_code);
+        println!("Rehydrated transformed binary: {}", transformed);
+        Some(transformed)
+    } else {
+        None
+    };
+
+    Ok(Hexs {
+        consultation_code,
+        binary: original_bin,
+        transformed_binary: transformed_bin,
+    })
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![build, fetch_hexagram_data])
+        .plugin(
+            LogBuilder::new()
+                .targets([Target::new(TargetKind::Stdout)]) // Only stdout for now
+                .level(log::LevelFilter::Info) // Match the frontend 'info' level
+                .build(),
+        )
+        .invoke_handler(tauri::generate_handler![
+            generate_reading,
+            rehydrate_reading,
+            fetch_hexagram_data
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

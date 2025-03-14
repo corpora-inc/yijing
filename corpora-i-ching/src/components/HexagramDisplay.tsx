@@ -6,19 +6,19 @@ import { CardContent } from '@/components/ui/card';
 import { useLanguage } from '../context/LanguageContext';
 
 interface HexagramDisplayProps {
-    title: string;
     hexs: Hexs;
     hexagram: IChingHexagram;
+    isOriginal: boolean;
 }
 
-const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram }) => {
+const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOriginal }) => {
     const { languages } = useLanguage();
-    const showAnyLanguage = languages.zh || languages.en || languages.es;
+    const showAnyLanguage = languages.zh || languages.en || languages.es || languages.pinyin;
 
     // Get the original consultation code (bottom to top)
     const originalDigits = hexs.consultation_code.split('');
 
-    // For the transformed hexagram, map to the transformed state without changing indicators
+    // For the transformed hexagram, map to the transformed state
     const transformedDigits = hexs.transformed_binary
         ? hexs.transformed_binary.split('').map((_bit, idx) => {
             const origDigit = hexs.consultation_code[idx];
@@ -28,25 +28,24 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
         })
         : [];
 
-    // Determine which digits to use and track changing lines
-    const digits = title.includes('Original') ? originalDigits : transformedDigits;
-    const isChangingArray = title.includes('Original')
-        ? originalDigits.map(digit => digit === '6' || digit === '9')
-        : Array(digits.length).fill(false); // No changing indicators in transformed
+    // Use transformed digits for display, original for changing detection
+    const displayDigits = isOriginal ? originalDigits : transformedDigits;
+    const isChangingArray = originalDigits.map(digit => digit === '6' || digit === '9'); // Always based on original
 
     // Reverse for display (top line first)
-    const displayLines = digits.slice().reverse();
+    const displayLines = displayDigits.slice().reverse();
     const displayChanging = isChangingArray.slice().reverse();
 
     return (
-        <CardContent className="space-y-4">
-            <h2 className="text-xl font-semibold">{title}</h2>
+        <CardContent className="space-y-4 flex flex-col items-center">
+            <span className="text-sm text-gray-500 mb-2">{hexagram.number}</span> {/* Subtle hex number */}
             <div className="flex flex-col items-center">
                 {displayLines.map((digit, idx) => (
                     <HexagramLine
                         key={idx}
                         digit={digit}
                         isChanging={displayChanging[idx]}
+                        originalDigit={originalDigits[originalDigits.length - 1 - idx]}
                     />
                 ))}
             </div>
@@ -56,15 +55,30 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ title, hexs, hexagram
                 {languages.en && <p className="text-lg">{hexagram.english_name}</p>}
             </div>
             {showAnyLanguage && (
-                <>
-                    {languages.zh && <p><strong>Judgment (ZH):</strong> {hexagram.judgment_zh}</p>}
-                    {languages.en && <p><strong>Judgment (EN):</strong> {hexagram.judgment_en}</p>}
-                    {languages.es && <p><strong>Judgment (ES):</strong> {hexagram.judgment_es}</p>}
-                </>
+                <div className="text-center space-y-2 w-full">
+                    {languages.zh && hexagram.judgment_zh && (
+                        <>
+                            <p>{hexagram.judgment_zh}</p>
+                            {(languages.en || languages.es || languages.pinyin) && hexagram.judgment_pinyin && <hr className="border-t border-gray-200 opacity-50" />}
+                        </>
+                    )}
+                    {languages.pinyin && hexagram.judgment_pinyin && (
+                        <>
+                            <p>{hexagram.judgment_pinyin}</p>
+                            {(languages.en || languages.es) && hexagram.judgment_en && <hr className="border-t border-gray-200 opacity-50" />}
+                        </>
+                    )}
+                    {languages.en && hexagram.judgment_en && (
+                        <>
+                            <p>{hexagram.judgment_en}</p>
+                            {languages.es && hexagram.judgment_es && <hr className="border-t border-gray-200 opacity-50" />}
+                        </>
+                    )}
+                    {languages.es && hexagram.judgment_es && <p>{hexagram.judgment_es}</p>}
+                </div>
             )}
-            {title.includes('Original') && hexagram.changing_lines.length > 0 && showAnyLanguage && (
+            {isOriginal && hexagram.changing_lines.length > 0 && showAnyLanguage && (
                 <div className="space-y-2">
-                    <h3 className="text-lg font-medium mt-4">Changing Lines</h3>
                     {hexagram.changing_lines.map((line) => (
                         <ChangingLine key={line.line_number} line={line} />
                     ))}

@@ -1,5 +1,6 @@
 use rusqlite::{params, Connection, Result};
 use serde::Serialize;
+use std::fs;
 use tauri::{AppHandle, Manager};
 
 #[derive(Serialize)]
@@ -8,6 +9,7 @@ pub struct IChingLine {
     pub text_zh: String,
     pub text_en: String,
     pub text_es: String,
+    pub text_pinyin: String,
 }
 
 #[derive(Serialize)]
@@ -20,6 +22,7 @@ pub struct IChingHexagram {
     pub judgment_zh: String,
     pub judgment_en: String,
     pub judgment_es: String,
+    pub judgment_pinyin: String,
     pub english_name: String,
     pub changing_lines: Vec<IChingLine>,
 }
@@ -27,9 +30,8 @@ pub struct IChingHexagram {
 /// Query the database by the binary representation of the hexagram.
 pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram> {
     let conn: Connection = Connection::open(db_path)?;
-    // Fetch the hexagram data from the iching_hexagram table.
     let hexagram = conn.query_row(
-        "SELECT id, number, chinese_name, pinyin, binary, judgment_zh, judgment_en, judgment_es, english_name
+        "SELECT id, number, chinese_name, pinyin, binary, judgment_zh, judgment_en, judgment_es, english_name, judgment_pinyin
          FROM iching_hexagram
          WHERE binary = ?1",
         params![bin],
@@ -44,15 +46,14 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
                 judgment_en: row.get(6)?,
                 judgment_es: row.get(7)?,
                 english_name: row.get(8)?,
-                // Initialize with an empty vector; we will fill this in below.
+                judgment_pinyin: row.get(9)?,
                 changing_lines: Vec::new(),
             })
         },
     )?;
 
-    // Fetch the associated line texts from the iching_line table.
     let mut stmt: rusqlite::Statement<'_> = conn.prepare(
-        "SELECT line_number, text_zh, text_en, text_es
+        "SELECT line_number, text_zh, text_en, text_es, text_pinyin
          FROM iching_line
          WHERE hexagram_id = ?1
          ORDER BY line_number ASC",
@@ -63,6 +64,7 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
             text_zh: row.get(1)?,
             text_en: row.get(2)?,
             text_es: row.get(3)?,
+            text_pinyin: row.get(4)?,
         })
     })?;
 
@@ -71,7 +73,6 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
         changing_lines.push(line_result?);
     }
 
-    // Return the hexagram with its line data.
     Ok(IChingHexagram {
         changing_lines,
         ..hexagram
@@ -79,26 +80,41 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
 }
 
 #[tauri::command]
-pub fn fetch_hexagram_data(bin: String, app: AppHandle) -> Result<IChingHexagram, String> {
-    let db_path: std::path::PathBuf = app
+pub async fn fetch_hexagram_data(bin: String, app: AppHandle) -> Result<IChingHexagram, String> {
+    let resource_path = app
         .path()
-        .resolve("resources/db.sqlite3", tauri::path::BaseDirectory::Resource)
-        .map_err(|e: tauri::Error| format!("Failed to resolve database path: {}", e))?;
+        .resource_dir()
+        .map_err(|e| format!("Failed to get resource directory: {}", e))?
+        .join("resources/db.sqlite3");
+    println!("Resolved resource path: {}", resource_path.display());
 
-    // Log the resolved path for debugging
-    println!("Resolved database path: {}", db_path.display());
+    let db_path_str = if resource_path.to_string_lossy().starts_with("asset://") {
+        let data_dir = app
+            .path()
+            .app_data_dir()
+            .map_err(|e| format!("Failed to get app data dir: {}", e))?;
+        let db_path = data_dir.join("db.sqlite3");
+        if !db_path.exists() {
+            println!(
+                "DB not found at {}, embedding from binary",
+                db_path.display()
+            );
+            let db_bytes = include_bytes!("../resources/db.sqlite3"); // From src-tauri/src/
+            fs::create_dir_all(&data_dir)
+                .map_err(|e| format!("Failed to create data dir: {}", e))?;
+            fs::write(&db_path, db_bytes).map_err(|e| format!("Failed to write DB: {}", e))?;
+            println!("Embedded DB to: {}", db_path.display());
+        } else {
+            println!("DB already exists at: {}", db_path.display());
+        }
+        db_path.to_string_lossy().to_string()
+    } else {
+        if !resource_path.exists() {
+            return Err(format!("DB file not found at: {}", resource_path.display()));
+        }
+        resource_path.to_string_lossy().to_string()
+    };
 
-    // Check if the file exists, and panic if it doesn’t (for dev-time clarity)
-    if !db_path.exists() {
-        panic!("Database file not found at: {}", db_path.display());
-    }
-
-    get_hexagram_by_binary(&db_path.to_string_lossy(), &bin).map_err(|err: rusqlite::Error| {
-        format!(
-            "Database error: {:#?}\nOccurred in file '{}' at line {}",
-            err,
-            file!(),
-            line!()
-        )
-    })
+    println!("Using DB at: {}", db_path_str);
+    get_hexagram_by_binary(&db_path_str, &bin).map_err(|err| format!("Database error: {:?}", err))
 }
