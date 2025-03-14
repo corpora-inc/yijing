@@ -36,7 +36,7 @@ export interface IChingHexagram {
     judgment_es: string;
     judgment_pinyin: string;
     english_name: string;
-    changing_lines: IChingLine[];
+    changing_lines?: IChingLine[];
 }
 
 interface Reading {

@@ -24,13 +24,13 @@ pub struct IChingHexagram {
     pub judgment_es: String,
     pub judgment_pinyin: String,
     pub english_name: String,
-    pub changing_lines: Vec<IChingLine>,
+    pub changing_lines: Option<Vec<IChingLine>>,
 }
 
 /// Query the database by the binary representation of the hexagram.
 pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram> {
     let conn: Connection = Connection::open(db_path)?;
-    let hexagram = conn.query_row(
+    let hexagram: IChingHexagram = conn.query_row(
         "SELECT id, number, chinese_name, pinyin, binary, judgment_zh, judgment_en, judgment_es, english_name, judgment_pinyin
          FROM iching_hexagram
          WHERE binary = ?1",
@@ -47,7 +47,7 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
                 judgment_es: row.get(7)?,
                 english_name: row.get(8)?,
                 judgment_pinyin: row.get(9)?,
-                changing_lines: Vec::new(),
+                changing_lines: None,
             })
         },
     )?;
@@ -68,13 +68,15 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
         })
     })?;
 
-    let mut changing_lines: Vec<_> = Vec::new();
+    let mut lines: Vec<IChingLine> = Vec::new();
     for line_result in line_iter {
-        changing_lines.push(line_result?);
+        lines.push(line_result?);
     }
 
+    let optional_lines: Option<Vec<IChingLine>> = if lines.is_empty() { None } else { Some(lines) };
+
     Ok(IChingHexagram {
-        changing_lines,
+        changing_lines: optional_lines,
         ..hexagram
     })
 }
