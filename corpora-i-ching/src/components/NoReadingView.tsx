@@ -35,7 +35,7 @@ const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
                 className="mb-4 w-full"
             />
             {languages.zh && (
-                <p className="mb-2 text-base text-gray-600 font-serif">
+                <p className="mb-2 text-gray-600 font-serif text-xl">
                     专注于你的问题，然后点击下方咨询易经。
                 </p>
             )}
@@ -55,12 +55,15 @@ const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
                 </p>
             )}
             <hr className="my-4" />
-            <Button onClick={handleNewReadingWithTitle} className="w-full max-w-full flex flex-col items-center">
-                <div className="flex flex-col items-center">
-                    {languages.zh && <span className="break-words">新咨询</span>}
-                    {languages.pinyin && <span className="break-words">Xīn zīxún</span>}
-                    {languages.en && <span className="break-words">New Reading</span>}
-                    {languages.es && <span className="break-words">Nueva Lectura</span>}
+            <Button
+                onClick={handleNewReadingWithTitle}
+                className="w-full max-w-full flex flex-col items-center h-auto min-h-10 py-4 bg-black text-white font-semibold rounded-lg shadow-lg border border-blue-400"
+            >
+                <div className="flex flex-col items-center gap-1">
+                    {languages.zh && <span className="break-words text-xl">新咨询</span>}
+                    {languages.pinyin && <span className="break-words text-base">Xīn zīxún</span>}
+                    {languages.en && <span className="break-words text-base">New Reading</span>}
+                    {languages.es && <span className="break-words text-base">Nueva Lectura</span>}
                 </div>
             </Button>
         </div>

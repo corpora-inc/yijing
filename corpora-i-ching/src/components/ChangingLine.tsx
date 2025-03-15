@@ -11,14 +11,12 @@ const ChangingLine: React.FC<ChangingLineProps> = ({ line }) => {
 
     return (
         <div className="text-center">
-            <span className="text-lg">{line.line_number}</span> {/* Just the number */}
-            {languages.zh && <p>{line.text_zh}</p>}
-            {languages.zh && (languages.pinyin || languages.en || languages.es) && line.text_pinyin && <hr className="border-t border-gray-200 opacity-50" />}
+            <p className="text-xl m-5">{line.line_number}</p> {/* Just the number */}
+            {languages.zh && <p className="text-xl">{line.text_zh}</p>}
             {languages.pinyin && <p>{line.text_pinyin}</p>}
-            {languages.pinyin && (languages.en || languages.es) && line.text_en && <hr className="border-t border-gray-200 opacity-50" />}
             {languages.en && <p>{line.text_en}</p>}
-            {languages.en && languages.es && line.text_es && <hr className="border-t border-gray-200 opacity-50" />}
             {languages.es && <p>{line.text_es}</p>}
+            <hr className="border-t border-gray-200 m-5" />
         </div>
     );
 };

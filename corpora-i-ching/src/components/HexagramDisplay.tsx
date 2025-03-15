@@ -31,6 +31,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
     // Use transformed digits for display, original for changing detection
     const displayDigits = isOriginal ? originalDigits : transformedDigits;
     const isChangingArray = originalDigits.map(digit => digit === '6' || digit === '9'); // Always based on original
+    console.log('HexagramDisplay', { displayDigits, isChangingArray });
 
     // Reverse for display (top line first)
     const displayLines = displayDigits.slice().reverse();
@@ -58,28 +59,26 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
                 <div className="text-center space-y-2 w-full">
                     {languages.zh && hexagram.judgment_zh && (
                         <>
-                            <p>{hexagram.judgment_zh}</p>
-                            {(languages.en || languages.es || languages.pinyin) && hexagram.judgment_pinyin && <hr className="border-t border-gray-200 opacity-50" />}
+                            <p className="text-xl">{hexagram.judgment_zh}</p>
                         </>
                     )}
                     {languages.pinyin && hexagram.judgment_pinyin && (
                         <>
                             <p>{hexagram.judgment_pinyin}</p>
-                            {(languages.en || languages.es) && hexagram.judgment_en && <hr className="border-t border-gray-200 opacity-50" />}
                         </>
                     )}
                     {languages.en && hexagram.judgment_en && (
                         <>
                             <p>{hexagram.judgment_en}</p>
-                            {languages.es && hexagram.judgment_es && <hr className="border-t border-gray-200 opacity-50" />}
                         </>
                     )}
                     {languages.es && hexagram.judgment_es && <p>{hexagram.judgment_es}</p>}
+                    <hr className="border-t border-gray-200 mt-5" />
                 </div>
             )}
             {isOriginal && hexagram.changing_lines.length > 0 && showAnyLanguage && (
-                <div className="space-y-2">
-                    {hexagram.changing_lines.map((line) => (
+                <div>
+                    {hexagram.changing_lines.map((line, idx) => (
                         <ChangingLine key={line.line_number} line={line} />
                     ))}
                 </div>
