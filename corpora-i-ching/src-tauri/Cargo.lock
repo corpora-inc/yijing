@@ -679,7 +679,6 @@ dependencies = [
 name = "corpora-i-ching"
 version = "0.1.0"
 dependencies = [
- "android_logger",
  "anyhow",
  "getrandom 0.3.1",
  "log",
