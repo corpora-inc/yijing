@@ -62,7 +62,7 @@ const AppContent: React.FC = () => {
             const parsedReadings = JSON.parse(savedReadings) as Reading[];
             const sortedReadings = parsedReadings.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
             setReadings(sortedReadings);
-            console.log('Loaded and sorted readings:', sortedReadings);
+            // console.log('Loaded and sorted readings:', sortedReadings);
         }
     }, []);
 
@@ -70,7 +70,7 @@ const AppContent: React.FC = () => {
         const sortedReadings = updatedReadings.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
         localStorage.setItem('readings', JSON.stringify(sortedReadings));
         setReadings(sortedReadings);
-        console.log('Saved and sorted readings:', sortedReadings);
+        // console.log('Saved and sorted readings:', sortedReadings);
     };
 
     const handleNewReading = async (title: string) => {
