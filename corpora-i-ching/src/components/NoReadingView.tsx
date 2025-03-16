@@ -16,7 +16,7 @@ const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
     };
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-md max-w-md mx-auto text-center">
+        <div className="bg-white p-4 rounded-lg shadow-md max-w-xl mx-auto text-center">
             <Input
                 type="text"
                 value={title}

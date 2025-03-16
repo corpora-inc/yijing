@@ -5,7 +5,7 @@ import NoReadingView from './components/NoReadingView';
 import ReadingView from './components/ReadingView';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { LanguageProvider } from './context/LanguageContext';
-import { Book, History, Search, Trash2 } from 'lucide-react';
+import { Book, History, Search, Trash2 } from 'lucide-react'; // Added Plus icon
 import { info } from '@tauri-apps/plugin-log';
 
 // Define interfaces
@@ -187,7 +187,7 @@ const AppContent: React.FC = () => {
                         <span className="text-sm mt-1">Browse</span>
                     </TabsTrigger>
                 </TabsList>
-                <TabsContent value="consultation" className="flex-1 mt-16">
+                <TabsContent value="consultation" className="flex-1 mt-14">
                     {!hasReading ? (
                         <NoReadingView onNewReading={handleNewReading} />
                     ) : (
@@ -197,6 +197,7 @@ const AppContent: React.FC = () => {
                                 originalHex={originalHex!}
                                 transformedHex={transformedHex}
                                 error={error}
+                                onNewConsultation={handleResetReading} // Pass callback to reset
                             />
                         </div>
                     )}
