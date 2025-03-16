@@ -5,8 +5,9 @@ import NoReadingView from './components/NoReadingView';
 import ReadingView from './components/ReadingView';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { LanguageProvider } from './context/LanguageContext';
-import { Book, History, Search, Trash2 } from 'lucide-react'; // Added Plus icon
+import { Book, History, Search, Trash2 } from 'lucide-react';
 import { info } from '@tauri-apps/plugin-log';
+import { formatDistanceToNow } from 'date-fns'; // Import date-fns
 
 // Define interfaces
 export interface IChingLine {
@@ -187,7 +188,7 @@ const AppContent: React.FC = () => {
                         <span className="text-sm mt-1">Browse</span>
                     </TabsTrigger>
                 </TabsList>
-                <TabsContent value="consultation" className="flex-1 mt-14">
+                <TabsContent value="consultation" className="flex-1 mt-16">
                     {!hasReading ? (
                         <NoReadingView onNewReading={handleNewReading} />
                     ) : (
@@ -197,7 +198,7 @@ const AppContent: React.FC = () => {
                                 originalHex={originalHex!}
                                 transformedHex={transformedHex}
                                 error={error}
-                                onNewConsultation={handleResetReading} // Pass callback to reset
+                                onNewConsultation={handleResetReading}
                             />
                         </div>
                     )}
@@ -215,12 +216,12 @@ const AppContent: React.FC = () => {
                                         className="flex items-center justify-between p-2 border rounded hover:bg-gray-100"
                                     >
                                         <span
-                                            className="flex-1 cursor-pointer"
+                                            className="flex-1 cursor-pointer flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2"
                                             onClick={() => handleRevisitReading(reading.consultationCode)}
                                         >
-                                            <span className="font-medium">{reading.title || 'Untitled'}</span>
-                                            <span className="text-sm text-gray-500 ml-2">
-                                                {new Date(reading.timestamp).toLocaleString()}
+                                            <span className="font-medium break-words">{reading.title || 'Untitled'}</span>
+                                            <span className="text-sm text-gray-500 block sm:inline break-words">
+                                                {formatDistanceToNow(new Date(reading.timestamp), { addSuffix: true })}
                                             </span>
                                         </span>
                                         <button

@@ -88,7 +88,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
             {isOriginal && hexagram.changing_lines.length > 0 && showAnyLanguage && (
                 <div className="w-full">
                     {/* Toggle Button */}
-                    <div className="flex justify-center mb-4">
+                    <div className="flex justify-center mb-8">
                         <Button
                             onClick={() => setShowAllLines(!showAllLines)}
                             className="bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium rounded-lg px-4 py-2 text-sm shadow-sm transition-colors duration-200"
