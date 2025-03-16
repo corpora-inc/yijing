@@ -98,7 +98,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
                     </div>
                     {/* Changing Lines */}
                     <div>
-                        {visibleChangingLines.map((line, idx) => (
+                        {visibleChangingLines.map((line) => (
                             <ChangingLine key={line.line_number} line={line} />
                         ))}
                     </div>
