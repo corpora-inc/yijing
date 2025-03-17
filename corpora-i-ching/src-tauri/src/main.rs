@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    corpora_i_ching_lib::run()
+    yijing_lib::run()
 }
