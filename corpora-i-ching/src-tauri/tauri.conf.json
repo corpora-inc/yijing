@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "corpora-i-ching",
+  "productName": "Yìjīng",
   "version": "0.1.0",
-  "identifier": "com.corpora-i-ching.app",
+  "identifier": "com.corpora-yijing.app",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -19,7 +19,7 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'"
     }
   },
   "bundle": {

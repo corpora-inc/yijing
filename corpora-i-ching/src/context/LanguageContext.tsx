@@ -1,11 +1,10 @@
-// src/context/LanguageContext.tsx
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface LanguageState {
     zh: boolean;
     en: boolean;
     es: boolean;
-    pinyin: boolean; // Added Pinyin
+    pinyin: boolean;
 }
 
 interface LanguageContextProps {
@@ -16,12 +15,21 @@ interface LanguageContextProps {
 const LanguageContext = createContext<LanguageContextProps | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [languages, setLanguages] = useState<LanguageState>({
-        zh: true,
-        en: true,
-        es: false,
-        pinyin: false, // Default Pinyin off
-    });
+    const initialLanguages = localStorage.getItem('selectedLanguages');
+    const parsedLanguages: LanguageState = initialLanguages
+        ? JSON.parse(initialLanguages)
+        : {
+            zh: true,
+            en: true,
+            es: false,
+            pinyin: false,
+        };
+
+    const [languages, setLanguages] = useState<LanguageState>(parsedLanguages);
+
+    useEffect(() => {
+        localStorage.setItem('selectedLanguages', JSON.stringify(languages));
+    }, [languages]);
 
     return (
         <LanguageContext.Provider value={{ languages, setLanguages }}>
@@ -32,8 +40,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
 export const useLanguage = () => {
     const context = useContext(LanguageContext);
-    if (!context) {
+    if (context === undefined) {
         throw new Error('useLanguage must be used within a LanguageProvider');
     }
-    return context;
+    return context as LanguageContextProps;
 };

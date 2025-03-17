@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Hexs, IChingHexagram } from '../App';
 import ChangingLine from './ChangingLine';
 import HexagramLine from './HexagramLine';
 import { CardContent } from '@/components/ui/card';
 import { useLanguage } from '../context/LanguageContext';
+import { Button } from '@/components/ui/button';
 
 interface HexagramDisplayProps {
     hexs: Hexs;
@@ -14,6 +15,9 @@ interface HexagramDisplayProps {
 const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOriginal }) => {
     const { languages } = useLanguage();
     const showAnyLanguage = languages.zh || languages.en || languages.es || languages.pinyin;
+
+    // State to toggle between showing all lines or only changing lines
+    const [showAllLines, setShowAllLines] = useState(false);
 
     // Get the original consultation code (bottom to top)
     const originalDigits = hexs.consultation_code.split('');
@@ -31,10 +35,16 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
     // Use transformed digits for display, original for changing detection
     const displayDigits = isOriginal ? originalDigits : transformedDigits;
     const isChangingArray = originalDigits.map(digit => digit === '6' || digit === '9'); // Always based on original
+    // console.log('HexagramDisplay', { displayDigits, isChangingArray });
 
     // Reverse for display (top line first)
     const displayLines = displayDigits.slice().reverse();
     const displayChanging = isChangingArray.slice().reverse();
+
+    // Filter changing lines based on toggle state
+    const visibleChangingLines = showAllLines
+        ? hexagram.changing_lines // Show all lines
+        : hexagram.changing_lines.filter((_, idx) => isChangingArray[idx]); // Show only changing lines
 
     return (
         <CardContent className="space-y-4 flex flex-col items-center">
@@ -58,30 +68,40 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
                 <div className="text-center space-y-2 w-full">
                     {languages.zh && hexagram.judgment_zh && (
                         <>
-                            <p>{hexagram.judgment_zh}</p>
-                            {(languages.en || languages.es || languages.pinyin) && hexagram.judgment_pinyin && <hr className="border-t border-gray-200 opacity-50" />}
+                            <p className="text-xl">{hexagram.judgment_zh}</p>
                         </>
                     )}
                     {languages.pinyin && hexagram.judgment_pinyin && (
                         <>
                             <p>{hexagram.judgment_pinyin}</p>
-                            {(languages.en || languages.es) && hexagram.judgment_en && <hr className="border-t border-gray-200 opacity-50" />}
                         </>
                     )}
                     {languages.en && hexagram.judgment_en && (
                         <>
                             <p>{hexagram.judgment_en}</p>
-                            {languages.es && hexagram.judgment_es && <hr className="border-t border-gray-200 opacity-50" />}
                         </>
                     )}
                     {languages.es && hexagram.judgment_es && <p>{hexagram.judgment_es}</p>}
+                    <hr className="border-t border-gray-200 mt-5" />
                 </div>
             )}
             {isOriginal && hexagram.changing_lines.length > 0 && showAnyLanguage && (
-                <div className="space-y-2">
-                    {hexagram.changing_lines.map((line) => (
-                        <ChangingLine key={line.line_number} line={line} />
-                    ))}
+                <div className="w-full">
+                    {/* Toggle Button */}
+                    <div className="flex justify-center mb-8">
+                        <Button
+                            onClick={() => setShowAllLines(!showAllLines)}
+                            className="bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium rounded-lg px-4 py-2 text-sm shadow-sm transition-colors duration-200"
+                        >
+                            {showAllLines ? 'Show Changing' : 'Show All Lines'}
+                        </Button>
+                    </div>
+                    {/* Changing Lines */}
+                    <div>
+                        {visibleChangingLines.map((line) => (
+                            <ChangingLine key={line.line_number} line={line} />
+                        ))}
+                    </div>
                 </div>
             )}
         </CardContent>
