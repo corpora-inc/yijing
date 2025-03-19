@@ -1,5 +1,6 @@
 use rusqlite::{params, Connection, Result};
 use serde::Serialize;
+use sha2::{Digest, Sha256};
 use std::fs;
 use tauri::{AppHandle, Manager};
 
@@ -94,18 +95,44 @@ pub async fn fetch_hexagram_data(bin: String, app: AppHandle) -> Result<IChingHe
             .app_data_dir()
             .map_err(|e| format!("Failed to get app data dir: {}", e))?;
         let db_path = data_dir.join("db.sqlite3");
-        if !db_path.exists() {
+        let db_bytes = include_bytes!("../resources/db.sqlite3"); // From src-tauri/src/
+        let embedded_hash = {
+            let mut hasher = Sha256::new();
+            hasher.update(db_bytes);
+            format!("{:x}", hasher.finalize())
+        };
+        let should_overwrite = if db_path.exists() {
+            let disk_bytes =
+                fs::read(&db_path).map_err(|e| format!("Failed to read existing DB: {}", e))?;
+            let disk_hash = {
+                let mut hasher = Sha256::new();
+                hasher.update(&disk_bytes);
+                format!("{:x}", hasher.finalize())
+            };
+            embedded_hash != disk_hash
+        } else {
+            true
+        };
+        if should_overwrite {
             println!(
-                "DB not found at {}, embedding from binary",
-                db_path.display()
+                "DB at {} missing or outdated (embedded hash: {}, disk hash: {}), embedding from binary",
+                db_path.display(),
+                embedded_hash,
+                if db_path.exists() {
+                    let disk_bytes = fs::read(&db_path).unwrap();
+                    let mut hasher = Sha256::new();
+                    hasher.update(&disk_bytes);
+                    format!("{:x}", hasher.finalize())
+                } else {
+                    "none".to_string()
+                }
             );
-            let db_bytes = include_bytes!("../resources/db.sqlite3"); // From src-tauri/src/
             fs::create_dir_all(&data_dir)
                 .map_err(|e| format!("Failed to create data dir: {}", e))?;
             fs::write(&db_path, db_bytes).map_err(|e| format!("Failed to write DB: {}", e))?;
             println!("Embedded DB to: {}", db_path.display());
         } else {
-            println!("DB already exists at: {}", db_path.display());
+            println!("DB already exists and matches at: {}", db_path.display());
         }
         db_path.to_string_lossy().to_string()
     } else {
