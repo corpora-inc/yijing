@@ -16,14 +16,14 @@ pub struct IChingLine {
 pub struct IChingHexagram {
     pub id: i32,
     pub number: u32,
-    pub chinese_name: String,
+    pub name_zh: String,
+    pub name_en: String,
     pub pinyin: String,
     pub binary: String,
     pub judgment_zh: String,
     pub judgment_en: String,
     pub judgment_es: String,
     pub judgment_pinyin: String,
-    pub english_name: String,
     pub changing_lines: Vec<IChingLine>,
 }
 
@@ -31,7 +31,7 @@ pub struct IChingHexagram {
 pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram> {
     let conn: Connection = Connection::open(db_path)?;
     let hexagram = conn.query_row(
-        "SELECT id, number, chinese_name, pinyin, binary, judgment_zh, judgment_en, judgment_es, english_name, judgment_pinyin
+        "SELECT id, number, name_zh, pinyin, binary, judgment_zh, judgment_en, judgment_es, name_en, judgment_pinyin
          FROM iching_hexagram
          WHERE binary = ?1",
         params![bin],
@@ -39,13 +39,13 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
             Ok(IChingHexagram {
                 id: row.get(0)?,
                 number: row.get(1)?,
-                chinese_name: row.get(2)?,
+                name_zh: row.get(2)?,
                 pinyin: row.get(3)?,
                 binary: row.get(4)?,
                 judgment_zh: row.get(5)?,
                 judgment_en: row.get(6)?,
                 judgment_es: row.get(7)?,
-                english_name: row.get(8)?,
+                name_en: row.get(8)?,
                 judgment_pinyin: row.get(9)?,
                 changing_lines: Vec::new(),
             })

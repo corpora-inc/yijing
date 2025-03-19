@@ -28,14 +28,14 @@ export interface Hexs {
 export interface IChingHexagram {
     id: number;
     number: number;
-    chinese_name: string;
+    name_zh: string;
+    name_en: string;
     pinyin: string;
     binary: string;
     judgment_zh: string;
     judgment_en: string;
     judgment_es: string;
     judgment_pinyin: string;
-    english_name: string;
     changing_lines: IChingLine[];
 }
 
