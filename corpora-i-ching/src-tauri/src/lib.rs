@@ -1,5 +1,7 @@
+mod fetch_all;
 mod fetch_hex_data;
 
+use crate::fetch_all::fetch_all_hexagrams;
 use crate::fetch_hex_data::fetch_hexagram_data;
 use getrandom;
 use serde::Serialize;
@@ -155,7 +157,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             generate_reading,
             rehydrate_reading,
-            fetch_hexagram_data
+            fetch_hexagram_data,
+            fetch_all_hexagrams,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

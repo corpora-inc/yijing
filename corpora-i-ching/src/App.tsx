@@ -8,6 +8,7 @@ import { LanguageProvider } from './context/LanguageContext';
 import { Book, History, Search, Trash2 } from 'lucide-react';
 import { info } from '@tauri-apps/plugin-log';
 import { formatDistanceToNow } from 'date-fns'; // Import date-fns
+import BrowseView from './components/BrowseView';
 
 // Define interfaces
 export interface IChingLine {
@@ -30,6 +31,7 @@ export interface IChingHexagram {
     number: number;
     name_zh: string;
     name_en: string;
+    name_es: string;
     pinyin: string;
     binary: string;
     judgment_zh: string;
@@ -238,10 +240,7 @@ const AppContent: React.FC = () => {
                     </div>
                 </TabsContent>
                 <TabsContent value="browse" className="flex-1 mt-12">
-                    <div className="p-4">
-                        <h2 className="text-xl font-semibold mb-4">Browse Corpus</h2>
-                        <p className="text-gray-700">Explore translations and commentaries (coming soon).</p>
-                    </div>
+                    <BrowseView />
                 </TabsContent>
             </Tabs>
 
