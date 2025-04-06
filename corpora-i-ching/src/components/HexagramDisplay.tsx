@@ -63,6 +63,8 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
                 <h1 className="text-5xl font-bold text-gray-800">{hexagram.name_zh}</h1>
                 <p className="text-xl italic text-gray-600">({hexagram.name_pinyin})</p>
                 {languages.en && <p className="text-lg">{hexagram.name_en}</p>}
+                {languages.es && <p className="text-lg">{hexagram.name_es}</p>}
+                <hr className="border-t border-gray-200 mt-5" />
             </div>
             {showAnyLanguage && (
                 <div className="text-center space-y-2 w-full">

@@ -80,7 +80,7 @@ pub async fn fetch_all_hexagrams(app: AppHandle) -> Result<Vec<IChingHexagram>, 
     // Fetch all hexagrams from the iching_hexagram table
     let mut stmt = conn
         .prepare(
-            "SELECT id, number, name_zh, name_en, name_pinyin, binary, judgment_zh, judgment_en, judgment_es, judgment_pinyin
+            "SELECT id, number, name_zh, name_en, name_pinyin, binary, judgment_zh, judgment_en, judgment_es, judgment_pinyin, name_es
              FROM iching_hexagram",
         )
         .map_err(|e| e.to_string())?;
@@ -98,6 +98,7 @@ pub async fn fetch_all_hexagrams(app: AppHandle) -> Result<Vec<IChingHexagram>, 
                 judgment_en: row.get(7)?,
                 judgment_es: row.get(8)?,
                 judgment_pinyin: row.get(9)?,
+                name_es: row.get(10)?,
                 changing_lines: Vec::new(), // We'll fetch these next
             })
         })
