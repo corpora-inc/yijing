@@ -32,7 +32,7 @@ export interface IChingHexagram {
     name_zh: string;
     name_en: string;
     name_es: string;
-    pinyin: string;
+    name_pinyin: string;
     binary: string;
     judgment_zh: string;
     judgment_en: string;

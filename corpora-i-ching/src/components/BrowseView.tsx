@@ -12,7 +12,7 @@ const BrowseView: React.FC = () => {
     const [selectedHexagram, setSelectedHexagram] = useState<IChingHexagram | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isHexListCollapsed, setIsHexListCollapsed] = useState(false); // State for collapsing hexagram list
+    const [isHexListCollapsed, setIsHexListCollapsed] = useState(true);
     const { languages } = useLanguage(); // Get the selected languages
     const showAnyLanguage = languages.zh || languages.en || languages.es || languages.pinyin;
 
@@ -67,7 +67,7 @@ const BrowseView: React.FC = () => {
     const renderChangingLines = (lines: IChingLine[]) => {
         return lines.map((line) => (
             <div key={line.line_number} className="my-4">
-                <h4 className="text-lg font-semibold text-center">Line {line.line_number}</h4>
+                <h4 className="text-lg font-semibold text-center">{line.line_number}</h4>
                 {languages.zh && line.text_zh && <p className="text-xl text-center">{line.text_zh}</p>}
                 {languages.pinyin && line.text_pinyin && <p className="text-center">{line.text_pinyin}</p>}
                 {languages.en && line.text_en && <p className="text-center">{line.text_en}</p>}
@@ -90,9 +90,9 @@ const BrowseView: React.FC = () => {
             <div className="space-y-4">
                 {/* Traditional Matrix */}
                 <Card>
-                    <CardHeader>
+                    {/* <CardHeader>
                         <CardTitle>Traditional Matrix</CardTitle>
-                    </CardHeader>
+                    </CardHeader> */}
                     <CardContent>
                         <div className="w-full overflow-x-hidden">
                             <table className="table-auto border-collapse w-full">
@@ -170,7 +170,7 @@ const BrowseView: React.FC = () => {
                                                                 : hexagram.name_en}
                                                     </span>
                                                     <span className="text-sm text-gray-600">
-                                                        {hexagram.name_zh} ({hexagram.pinyin})
+                                                        {hexagram.name_zh} ({hexagram.name_pinyin})
                                                     </span>
                                                 </div>
                                             </div>
@@ -201,7 +201,7 @@ const BrowseView: React.FC = () => {
                                     <h1 className="text-5xl font-bold text-gray-800">{selectedHexagram.name_zh}</h1>
                                 )}
                                 {languages.pinyin && (
-                                    <p className="text-xl italic text-gray-600">({selectedHexagram.pinyin})</p>
+                                    <p className="text-xl italic text-gray-600">({selectedHexagram.name_pinyin})</p>
                                 )}
                                 {languages.en && <p className="text-lg">{selectedHexagram.name_en}</p>}
                                 {languages.es && <p className="text-lg">{selectedHexagram.name_es}</p>}
@@ -229,7 +229,6 @@ const BrowseView: React.FC = () => {
                             {/* Changing Lines (Show All Lines in Browse Mode) */}
                             {showAnyLanguage && selectedHexagram.changing_lines.length > 0 && (
                                 <div className="w-full">
-                                    <h3 className="text-xl font-semibold mb-4 text-center">Lines</h3>
                                     {renderChangingLines(selectedHexagram.changing_lines)}
                                 </div>
                             )}
