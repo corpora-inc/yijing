@@ -1,8 +1,11 @@
 mod fetch_all;
+mod fetch_consultation_interpretation;
 mod fetch_hex_data;
 
 use crate::fetch_all::fetch_all_hexagrams;
+use crate::fetch_consultation_interpretation::fetch_interpretation;
 use crate::fetch_hex_data::fetch_hexagram_data;
+
 use getrandom;
 use serde::Serialize;
 use tauri_plugin_log::{Builder as LogBuilder, Target, TargetKind};
@@ -159,6 +162,7 @@ pub fn run() {
             rehydrate_reading,
             fetch_hexagram_data,
             fetch_all_hexagrams,
+            fetch_interpretation,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
