@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useLanguage } from '../context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area'; // Added ScrollArea import
 
 const BrowseView: React.FC = () => {
     const [hexagrams, setHexagrams] = useState<IChingHexagram[]>([]);
@@ -52,11 +53,11 @@ const BrowseView: React.FC = () => {
         return lines.map((bit, idx) => (
             <div key={idx} className="flex items-center justify-center my-1">
                 {bit === '1' ? (
-                    <div className="w-12 h-2 bg-black" />
+                    <div className="w-18 h-2 bg-black" />
                 ) : (
                     <div className="flex space-x-2">
-                        <div className="w-5 h-2 bg-black" />
-                        <div className="w-5 h-2 bg-black" />
+                        <div className="w-8 h-2 bg-black" />
+                        <div className="w-8 h-2 bg-black" />
                     </div>
                 )}
             </div>
@@ -133,7 +134,7 @@ const BrowseView: React.FC = () => {
                     </CardContent>
                 </Card>
 
-                {/* 1-64 Hexagram List (Collapsible) */}
+                {/* 1-64 Hexagram List (Collapsible) with ScrollArea */}
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between">
                         <CardTitle>Hexagram List (1-64)</CardTitle>
@@ -148,35 +149,37 @@ const BrowseView: React.FC = () => {
                     </CardHeader>
                     {!isHexListCollapsed && (
                         <CardContent>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                                {hexagrams
-                                    .sort((a, b) => a.number - b.number)
-                                    .map((hexagram) => {
-                                        const isSelected = selectedHexagram?.number === hexagram.number;
-                                        return (
-                                            <div
-                                                key={hexagram.id}
-                                                className={`p-2 border rounded cursor-pointer hover:bg-gray-200 transition-colors
+                            <ScrollArea className="h-[200px] w-full">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 pr-4">
+                                    {hexagrams
+                                        .sort((a, b) => a.number - b.number)
+                                        .map((hexagram) => {
+                                            const isSelected = selectedHexagram?.number === hexagram.number;
+                                            return (
+                                                <div
+                                                    key={hexagram.id}
+                                                    className={`p-2 border rounded cursor-pointer hover:bg-gray-200 transition-colors
                           ${isSelected ? 'bg-gray-300' : 'bg-white'}`}
-                                                onClick={() => setSelectedHexagram(hexagram)}
-                                            >
-                                                <div className="flex flex-col">
-                                                    <span className="font-medium">
-                                                        {hexagram.number}.{' '}
-                                                        {languages.en
-                                                            ? hexagram.name_en
-                                                            : languages.es
-                                                                ? hexagram.name_es
-                                                                : hexagram.name_en}
-                                                    </span>
-                                                    <span className="text-sm text-gray-600">
-                                                        {hexagram.name_zh} ({hexagram.name_pinyin})
-                                                    </span>
+                                                    onClick={() => setSelectedHexagram(hexagram)}
+                                                >
+                                                    <div className="flex flex-col">
+                                                        <span className="font-medium">
+                                                            {hexagram.number}.{' '}
+                                                            {languages.en
+                                                                ? hexagram.name_en
+                                                                : languages.es
+                                                                    ? hexagram.name_es
+                                                                    : hexagram.name_en}
+                                                        </span>
+                                                        <span className="text-sm text-gray-600">
+                                                            {hexagram.name_zh} ({hexagram.name_pinyin})
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
-                            </div>
+                                            );
+                                        })}
+                                </div>
+                            </ScrollArea>
                         </CardContent>
                     )}
                 </Card>
