@@ -20,11 +20,11 @@ const InterpretationModal: React.FC<InterpretationModalProps> = ({ isOpen, onClo
             />
             <DialogContent
                 className="w-full bg-white shadow-xl border border-gray-200
-                           max-w-[100vw] sm:max-w-lg lg:max-w-2xl
-                           max-h-[100vh] sm:max-h-[90vh] lg:max-h-[95vh]
-                           top-0 sm:top-[50%]
-                           translate-y-0 sm:translate-y-[-50%]
-                           h-full sm:h-auto
+                           max-w-[100vw] sm:max-w-[90vw] md:max-w-[60rem] /* Cap width for readability */
+                           max-h-[100vh] /* Full height on small screens, 90% on medium and larger */
+                           h-[100vh] sm:h-[90vh] /* Force the modal to take its max-h */
+                           top-0
+                           translate-y-0
                            rounded-none sm:rounded-lg
                            m-0 sm:m-auto
                            flex flex-col" // Use flexbox to control layout
@@ -39,12 +39,12 @@ const InterpretationModal: React.FC<InterpretationModalProps> = ({ isOpen, onClo
                 </DialogHeader>
                 <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
                     {text ? (
-                        <>
+                        <div className="max-w-[60rem] mx-auto"> {/* Cap text width for readability */}
                             <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{text}</p>
                             {attribution && (
                                 <p className="text-sm text-gray-500 italic">— {attribution}</p>
                             )}
-                        </>
+                        </div>
                     ) : (
                         <p className="text-gray-500 text-center">No interpretation available.</p>
                     )}
