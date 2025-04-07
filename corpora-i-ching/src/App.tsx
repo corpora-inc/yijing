@@ -1,3 +1,4 @@
+// App.tsx
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -7,7 +8,8 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import { LanguageProvider } from './context/LanguageContext';
 import { Book, History, Search, Trash2 } from 'lucide-react';
 import { info } from '@tauri-apps/plugin-log';
-import { formatDistanceToNow } from 'date-fns'; // Import date-fns
+import { formatDistanceToNow } from 'date-fns';
+import BrowseView from './components/BrowseView';
 
 // Define interfaces
 export interface IChingLine {
@@ -30,13 +32,19 @@ export interface IChingHexagram {
     number: number;
     name_zh: string;
     name_en: string;
-    pinyin: string;
+    name_es: string;
+    name_pinyin: string;
     binary: string;
     judgment_zh: string;
     judgment_en: string;
     judgment_es: string;
     judgment_pinyin: string;
     changing_lines: IChingLine[];
+}
+
+export interface ConsultationInterpretation {
+    text: string;
+    attribution: string;
 }
 
 interface Reading {
@@ -52,6 +60,7 @@ const AppContent: React.FC = () => {
     const [hexs, setHexs] = useState<Hexs | null>(null);
     const [originalHex, setOriginalHex] = useState<IChingHexagram | null>(null);
     const [transformedHex, setTransformedHex] = useState<IChingHexagram | null>(null);
+    const [interpretation, setInterpretation] = useState<ConsultationInterpretation | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [readings, setReadings] = useState<Reading[]>([]);
 
@@ -69,6 +78,18 @@ const AppContent: React.FC = () => {
         const sortedReadings = updatedReadings.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
         localStorage.setItem('readings', JSON.stringify(sortedReadings));
         setReadings(sortedReadings);
+    };
+
+    const fetchInterpretation = async (consultationCode: string) => {
+        try {
+            const interpretationData = await invoke<ConsultationInterpretation | null>('fetch_interpretation', {
+                consultationCode,
+            });
+            setInterpretation(interpretationData);
+        } catch (error) {
+            console.error('Failed to fetch interpretation:', error);
+            setInterpretation(null);
+        }
     };
 
     const handleNewReading = async (title: string) => {
@@ -89,6 +110,8 @@ const AppContent: React.FC = () => {
                 });
                 console.log("Transformed hexagram data from DB:", transformedHexData);
             }
+
+            await fetchInterpretation(hexagram.consultation_code);
 
             const newReading: Reading = {
                 id: readings.length > 0 ? Math.max(...readings.map(r => r.id || 0)) + 1 : 1,
@@ -128,6 +151,8 @@ const AppContent: React.FC = () => {
                 console.log("Rehydrated transformed hexagram data from DB:", transformedHexData);
             }
 
+            await fetchInterpretation(consultationCode);
+
             setHexs(hexagram);
             setOriginalHex(originalHexData);
             setTransformedHex(transformedHexData);
@@ -151,6 +176,7 @@ const AppContent: React.FC = () => {
         setHexs(null);
         setOriginalHex(null);
         setTransformedHex(null);
+        setInterpretation(null);
         setError(null);
     };
 
@@ -199,6 +225,7 @@ const AppContent: React.FC = () => {
                                 transformedHex={transformedHex}
                                 error={error}
                                 onNewConsultation={handleResetReading}
+                                interpretation={interpretation}
                             />
                         </div>
                     )}
@@ -238,10 +265,7 @@ const AppContent: React.FC = () => {
                     </div>
                 </TabsContent>
                 <TabsContent value="browse" className="flex-1 mt-12">
-                    <div className="p-4">
-                        <h2 className="text-xl font-semibold mb-4">Browse Corpus</h2>
-                        <p className="text-gray-700">Explore translations and commentaries (coming soon).</p>
-                    </div>
+                    <BrowseView />
                 </TabsContent>
             </Tabs>
 

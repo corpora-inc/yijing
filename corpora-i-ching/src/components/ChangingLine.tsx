@@ -10,7 +10,7 @@ const ChangingLine: React.FC<ChangingLineProps> = ({ line }) => {
     const { languages } = useLanguage();
 
     return (
-        <div className="text-center space-y-2 w-full">
+        <div className="text-center space-y-4 w-full">
             <p className="text-xl m-5">{line.line_number}</p> {/* Just the number */}
             {languages.zh && <p className="text-xl">{line.text_zh}</p>}
             {languages.pinyin && <p>{line.text_pinyin}</p>}

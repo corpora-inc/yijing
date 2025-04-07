@@ -1,3 +1,5 @@
+*.key
+*.csr
 venv
 # Logs
 logs
