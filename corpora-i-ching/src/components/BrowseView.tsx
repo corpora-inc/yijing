@@ -67,7 +67,7 @@ const BrowseView: React.FC = () => {
     // Function to render changing lines (in browse mode, we show all lines)
     const renderChangingLines = (lines: IChingLine[]) => {
         return lines.map((line) => (
-            <div key={line.line_number} className="my-4">
+            <div key={line.line_number} className="px-10 py-2 my-10 space-y-4">
                 <h4 className="text-lg font-semibold text-center">{line.line_number}</h4>
                 {languages.zh && line.text_zh && <p className="text-xl text-center">{line.text_zh}</p>}
                 {languages.pinyin && line.text_pinyin && <p className="text-center">{line.text_pinyin}</p>}
@@ -199,7 +199,7 @@ const BrowseView: React.FC = () => {
                             </div>
 
                             {/* Hexagram Name */}
-                            <div className="text-center space-y-2">
+                            <div className="text-center space-y-4">
                                 {languages.zh && (
                                     <h1 className="text-5xl font-bold text-gray-800">{selectedHexagram.name_zh}</h1>
                                 )}
@@ -208,11 +208,12 @@ const BrowseView: React.FC = () => {
                                 )}
                                 {languages.en && <p className="text-lg">{selectedHexagram.name_en}</p>}
                                 {languages.es && <p className="text-lg">{selectedHexagram.name_es}</p>}
+                                <hr className="border-t border-gray-200 my-5" />
                             </div>
 
                             {/* Judgment */}
                             {showAnyLanguage && (
-                                <div className="text-center space-y-2 w-full">
+                                <div className="text-center space-y-4 w-full">
                                     {languages.zh && selectedHexagram.judgment_zh && (
                                         <p className="text-xl">{selectedHexagram.judgment_zh}</p>
                                     )}
@@ -225,13 +226,13 @@ const BrowseView: React.FC = () => {
                                     {languages.es && selectedHexagram.judgment_es && (
                                         <p>{selectedHexagram.judgment_es}</p>
                                     )}
-                                    <hr className="border-t border-gray-200 mt-5" />
+                                    <hr className="border-t border-gray-200 mt-10" />
                                 </div>
                             )}
 
                             {/* Changing Lines (Show All Lines in Browse Mode) */}
                             {showAnyLanguage && selectedHexagram.changing_lines.length > 0 && (
-                                <div className="w-full">
+                                <div className="w-full space-y-4 w-full">
                                     {renderChangingLines(selectedHexagram.changing_lines)}
                                 </div>
                             )}
