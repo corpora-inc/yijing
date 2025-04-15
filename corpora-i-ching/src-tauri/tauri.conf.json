@@ -33,7 +33,13 @@
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
-      "icons/icon.ico"
-    ]
+      "icons/icon.ico",
+      "icons/512.png"
+    ],
+    "iOS": {
+      "minimumSystemVersion": "14.0",
+      "developmentTeam": "F9AV5HKF6N",
+      "template": "ios/project.yml"
+    }
   }
 }

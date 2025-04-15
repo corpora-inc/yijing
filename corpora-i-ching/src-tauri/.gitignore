@@ -1,3 +1,7 @@
+apple-signing/
+*.pem
+*.cer
+*.mobileprovision
 *.jks
 app-release-*
 
