@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Yìjīng",
+  "productName": "Yijing",
   "version": "0.3.2",
   "identifier": "com.corpora-yijing.app",
   "build": {
@@ -33,7 +33,13 @@
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
-      "icons/icon.ico"
-    ]
+      "icons/icon.ico",
+      "icons/512.png"
+    ],
+    "iOS": {
+      "minimumSystemVersion": "14.0",
+      "developmentTeam": "F9AV5HKF6N",
+      "template": "ios/project.yml"
+    }
   }
 }

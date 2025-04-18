@@ -29,6 +29,6 @@ Any future changes to this privacy policy will be documented in this file and ve
 
 ## Contact
 
-If you have questions about this privacy policy, please open an issue on our GitHub repository at https://github.com/corpora-inc/yijing/issues or contact us directly at [your contact email].
+If you have questions about this privacy policy, please open an issue on our GitHub repository at https://github.com/corpora-inc/yijing/issues or contact us directly: team@corpora.inc!
 
 *Last updated: April 10, 2025*
