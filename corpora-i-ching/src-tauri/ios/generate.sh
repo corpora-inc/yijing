@@ -1,3 +1,8 @@
+# This is catatrophically broken and does not work.
+# cp gen/apple/project.yml ios/project.yml
+# and modify by hand.
+return
+
 #!/usr/bin/env bash
 set -euo pipefail
 

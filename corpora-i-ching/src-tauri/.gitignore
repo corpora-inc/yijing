@@ -1,3 +1,4 @@
+*.plist
 apple-signing/
 *.pem
 *.cer

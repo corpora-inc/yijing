@@ -49,7 +49,7 @@ cd ios/
 cd ..
 cargo tauri ios init
 cargo tauri icon icons/512.png
-cp ios/ExportOptions.plist src-tauri/gen/apple/
+cp ios/ExportOptions.plist gen/apple/
 cargo tauri ios build
 ```
 
@@ -63,3 +63,5 @@ cargo tauri ios build
 - [`project.yml` template upstream](https://github.com/tauri-apps/tauri/blob/dev/crates/tauri-cli/templates/mobile/ios/project.yml)
 - [`ExportOptions.plist` upstream](https://github.com/tauri-apps/tauri/blob/dev/crates/tauri-cli/templates/mobile/ios/ExportOptions.plist)
 - [Xcode code signing docs](https://developer.apple.com/documentation/bundleresources/entitlements)
+
+https://github.com/yonaskolb/XcodeGen

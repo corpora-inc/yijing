@@ -11,7 +11,8 @@
   <key>provisioningProfiles</key>
   <dict>
     <key>com.corpora-yijing.app</key>
-    <string>yijing</string>
+    <!-- <string>yijing</string> -->
+    <string>5a25e20a-107f-4fd3-89b9-3c6a4dc3900a</string>
   </dict>
 </dict>
 </plist>
