@@ -1,6 +1,7 @@
 mod fetch_all;
 mod fetch_consultation_interpretation;
 mod fetch_hex_data;
+mod llm;
 
 use crate::fetch_all::fetch_all_hexagrams;
 use crate::fetch_consultation_interpretation::fetch_interpretation;
@@ -8,7 +9,27 @@ use crate::fetch_hex_data::fetch_hexagram_data;
 
 use getrandom;
 use serde::Serialize;
+use std::sync::Mutex;
+use tauri::{Manager, State};
 use tauri_plugin_log::{Builder as LogBuilder, Target, TargetKind};
+
+use llm::LlmState;
+
+// Manage the LLM state in the Tauri app
+struct AppState(Mutex<LlmState>);
+
+#[tauri::command]
+async fn stream_llm(
+    prompt: String,
+    state: State<AppState>,
+    app_handle: tauri::AppHandle,
+    channel: tauri::ipc::Channel<String>,
+) -> Result<(), String> {
+    let mut llm_state = state.0.lock().map_err(|e| e.to_string())?;
+    llm_state
+        .generate(&prompt, 50, channel) // Generate up to 50 tokens
+        .map_err(|e| e.to_string())
+}
 
 #[derive(Debug, Clone, Copy)]
 pub enum Line {
@@ -163,6 +184,7 @@ pub fn run() {
             fetch_hexagram_data,
             fetch_all_hexagrams,
             fetch_interpretation,
+            stream_llm,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

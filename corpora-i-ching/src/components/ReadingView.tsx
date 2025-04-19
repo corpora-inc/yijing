@@ -4,7 +4,8 @@ import HexagramDisplay from './HexagramDisplay';
 import { Hexs, IChingHexagram } from '../App';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '../context/LanguageContext';
-import InterpretationModal from './InterpretationModal'; // Add this import
+// import InterpretationModal from './InterpretationModal'; // Add this import
+import InterpretationModal from './LlmInterpretation';
 
 interface ReadingViewProps {
     hexs: Hexs;
