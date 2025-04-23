@@ -19,8 +19,10 @@ const LanguageSwitcher: React.FC = () => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button className="fixed bottom-4 right-6 rounded-full w-12 h-12 bg-black text-white hover:bg-gray-800 shadow-lg">
-                    <Languages className="h-6 w-6" />
+                {/* <Button className="fixed right-10 bottom-10 rounded-full bg-black text-white hover:bg-gray-800" */}
+                <Button className="fab-fixed rounded-full bg-black text-white hover:bg-gray-800"
+                >
+                    <Languages />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-white shadow-lg">
