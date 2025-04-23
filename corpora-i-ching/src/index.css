@@ -116,6 +116,6 @@ pre {
     position: fixed !important;
     /* bottom: 1.5rem !important; */
     /* calulate env safe-bottome +1rem */
-    bottom: calc(env(safe-area-inset-bottom)) !important;
+    bottom: calc(max(env(safe-area-inset-bottom), 1rem)) !important;
     right: 1rem !important;
 }
