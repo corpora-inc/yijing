@@ -1,4 +1,6 @@
 *.plist
+!macos-entitlements.plist
+*.pkg
 apple-signing/
 *.pem
 *.cer
