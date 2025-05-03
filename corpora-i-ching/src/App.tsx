@@ -188,10 +188,10 @@ const AppContent: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col flex-1 h-screen relative">
+        <div className="flex flex-col flex-1 h-screen relative pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
             {/* Navigation Tabs */}
             <Tabs value={mode} onValueChange={handleTabChange} className="w-full flex flex-col">
-                <TabsList className="grid w-full grid-cols-3 gap-2 p-2 bg-gray-100">
+                <TabsList className="grid w-full grid-cols-3 gap-2 p-2">
                     <TabsTrigger
                         value="consultation"
                         className="flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
