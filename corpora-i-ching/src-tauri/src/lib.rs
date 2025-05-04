@@ -1,3 +1,4 @@
+mod db;
 mod fetch_all;
 mod fetch_consultation_interpretation;
 mod fetch_hex_data;
