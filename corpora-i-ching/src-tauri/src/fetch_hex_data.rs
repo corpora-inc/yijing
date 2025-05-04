@@ -1,8 +1,6 @@
 use rusqlite::{params, Connection, Result};
 use serde::Serialize;
-use sha2::{Digest, Sha256};
-use std::fs;
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 
 #[derive(Serialize)]
 pub struct IChingLine {
@@ -30,8 +28,7 @@ pub struct IChingHexagram {
 }
 
 /// Query the database by the binary representation of the hexagram.
-pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram> {
-    let conn: Connection = Connection::open(db_path)?;
+pub fn get_hexagram_by_binary(conn: Connection, bin: &str) -> Result<IChingHexagram> {
     let hexagram = conn.query_row(
         "SELECT id, number, name_zh, name_pinyin, binary, judgment_zh, judgment_en, judgment_es, name_en, judgment_pinyin, name_es
          FROM iching_hexagram
@@ -83,67 +80,9 @@ pub fn get_hexagram_by_binary(db_path: &str, bin: &str) -> Result<IChingHexagram
 }
 
 #[tauri::command]
-pub async fn fetch_hexagram_data(bin: String, app: AppHandle) -> Result<IChingHexagram, String> {
-    let resource_path = app
-        .path()
-        .resource_dir()
-        .map_err(|e| format!("Failed to get resource directory: {}", e))?
-        .join("resources/db.sqlite3");
-    println!("Resolved resource path: {}", resource_path.display());
+pub async fn fetch_hexagram_data(bin: String, _app: AppHandle) -> Result<IChingHexagram, String> {
+    let conn =
+        crate::db::open_embedded_db().map_err(|e| format!("could not open embedded DB: {}", e))?;
 
-    let db_path_str = if resource_path.to_string_lossy().starts_with("asset://") {
-        let data_dir = app
-            .path()
-            .app_data_dir()
-            .map_err(|e| format!("Failed to get app data dir: {}", e))?;
-        let db_path = data_dir.join("db.sqlite3");
-        let db_bytes = include_bytes!("../resources/db.sqlite3"); // From src-tauri/src/
-        let embedded_hash = {
-            let mut hasher = Sha256::new();
-            hasher.update(db_bytes);
-            format!("{:x}", hasher.finalize())
-        };
-        let should_overwrite = if db_path.exists() {
-            let disk_bytes =
-                fs::read(&db_path).map_err(|e| format!("Failed to read existing DB: {}", e))?;
-            let disk_hash = {
-                let mut hasher = Sha256::new();
-                hasher.update(&disk_bytes);
-                format!("{:x}", hasher.finalize())
-            };
-            embedded_hash != disk_hash
-        } else {
-            true
-        };
-        if should_overwrite {
-            println!(
-                "DB at {} missing or outdated (embedded hash: {}, disk hash: {}), embedding from binary",
-                db_path.display(),
-                embedded_hash,
-                if db_path.exists() {
-                    let disk_bytes = fs::read(&db_path).unwrap();
-                    let mut hasher = Sha256::new();
-                    hasher.update(&disk_bytes);
-                    format!("{:x}", hasher.finalize())
-                } else {
-                    "none".to_string()
-                }
-            );
-            fs::create_dir_all(&data_dir)
-                .map_err(|e| format!("Failed to create data dir: {}", e))?;
-            fs::write(&db_path, db_bytes).map_err(|e| format!("Failed to write DB: {}", e))?;
-            println!("Embedded DB to: {}", db_path.display());
-        } else {
-            println!("DB already exists and matches at: {}", db_path.display());
-        }
-        db_path.to_string_lossy().to_string()
-    } else {
-        if !resource_path.exists() {
-            return Err(format!("DB file not found at: {}", resource_path.display()));
-        }
-        resource_path.to_string_lossy().to_string()
-    };
-
-    println!("Using DB at: {}", db_path_str);
-    get_hexagram_by_binary(&db_path_str, &bin).map_err(|err| format!("Database error: {:?}", err))
+    get_hexagram_by_binary(conn, &bin).map_err(|err| format!("Database error: {:?}", err))
 }
