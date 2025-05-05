@@ -53,7 +53,6 @@ const ReadingView: React.FC<ReadingViewProps> = ({ hexs, originalHex, transforme
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 text={interpretation?.text || null}
-                attribution={interpretation?.attribution || null}
             />
         </div>
     );
