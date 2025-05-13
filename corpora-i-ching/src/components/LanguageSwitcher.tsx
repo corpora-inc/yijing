@@ -2,12 +2,13 @@ import React from "react";
 import { useLanguage } from "../context/LanguageContext";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -34,58 +35,58 @@ const LanguageSwitcher: React.FC = () => {
       <DropdownMenuContent className="bg-white shadow-lg">
         <DropdownMenuLabel>Show Languages</DropdownMenuLabel>
         <DropdownMenuSeparator />
-
-        <DropdownMenuCheckboxItem
-          onSelect={(e) => e.preventDefault()}
-          checked={languages.zh}
-          onCheckedChange={(checked) =>
-            !isLanguageDisabled("zh") &&
-            setLanguages({ ...languages, zh: !!checked })
-          }
-          className="mr-2"
-          disabled={isLanguageDisabled("zh")}
-        >
-          中文
-        </DropdownMenuCheckboxItem>
-
-        <DropdownMenuCheckboxItem
-          onSelect={(e) => e.preventDefault()}
-          checked={languages.pinyin}
-          onCheckedChange={(checked) =>
-            !isLanguageDisabled("pinyin") &&
-            setLanguages({ ...languages, pinyin: !!checked })
-          }
-          className="mr-2"
-          disabled={isLanguageDisabled("pinyin")}
-        >
-          Pinyin
-        </DropdownMenuCheckboxItem>
-
-        <DropdownMenuCheckboxItem
-          onSelect={(e) => e.preventDefault()}
-          checked={languages.en}
-          onCheckedChange={(checked) =>
-            !isLanguageDisabled("en") &&
-            setLanguages({ ...languages, en: !!checked })
-          }
-          className="mr-2"
-          disabled={isLanguageDisabled("en")}
-        >
-          English
-        </DropdownMenuCheckboxItem>
-
-        <DropdownMenuCheckboxItem
-          onSelect={(e) => e.preventDefault()}
-          checked={languages.es}
-          onCheckedChange={(checked) =>
-            !isLanguageDisabled("es") &&
-            setLanguages({ ...languages, es: !!checked })
-          }
-          className="mr-2"
-          disabled={isLanguageDisabled("es")}
-        >
-          Español
-        </DropdownMenuCheckboxItem>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Checkbox
+            id="zh"
+            checked={languages.zh}
+            onCheckedChange={(checked) =>
+              !isLanguageDisabled("zh") &&
+              setLanguages({ ...languages, zh: !!checked })
+            }
+            className="mr-2"
+            disabled={isLanguageDisabled("zh")}
+          />
+          <label htmlFor="zh">中文</label>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Checkbox
+            checked={languages.pinyin}
+            onCheckedChange={(checked) =>
+              !isLanguageDisabled("pinyin") &&
+              setLanguages({ ...languages, pinyin: !!checked })
+            }
+            className="mr-2"
+            id="pinyin"
+            disabled={isLanguageDisabled("pinyin")}
+          />
+          <label htmlFor="pinyin">Pinyin</label>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Checkbox
+            checked={languages.en}
+            onCheckedChange={(checked) =>
+              !isLanguageDisabled("en") &&
+              setLanguages({ ...languages, en: !!checked })
+            }
+            id="en"
+            className="mr-2"
+            disabled={isLanguageDisabled("en")}
+          />
+          <label htmlFor="en">English</label>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <Checkbox
+            checked={languages.es}
+            onCheckedChange={(checked) =>
+              !isLanguageDisabled("es") &&
+              setLanguages({ ...languages, es: !!checked })
+            }
+            id="es"
+            className="mr-2"
+            disabled={isLanguageDisabled("es")}
+          />
+          <label htmlFor="es">Español</label>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
