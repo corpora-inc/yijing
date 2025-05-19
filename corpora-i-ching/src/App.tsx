@@ -6,10 +6,11 @@ import NoReadingView from './components/NoReadingView';
 import ReadingView from './components/ReadingView';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { LanguageProvider } from './context/LanguageContext';
-import { Book, History, Search, Trash2 } from 'lucide-react';
+import { Book, History, Info, Search, Trash2 } from 'lucide-react';
 import { info } from '@tauri-apps/plugin-log';
 import { formatDistanceToNow } from 'date-fns';
 import BrowseView from './components/BrowseView';
+import AboutView from './components/AboutView';
 
 // Define interfaces
 export interface IChingLine {
@@ -191,27 +192,34 @@ const AppContent: React.FC = () => {
         <div className="flex flex-col flex-1 h-screen relative pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
             {/* Navigation Tabs */}
             <Tabs value={mode} onValueChange={handleTabChange} className="w-full flex flex-col">
-                <TabsList className="grid w-full grid-cols-3 gap-2 p-2">
+                <TabsList className="grid w-full grid-cols-7 gap-2 p-2">
                     <TabsTrigger
                         value="consultation"
-                        className="flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
+                        className="col-span-2 flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
                     >
                         <Book className="h-12 w-12" />
                         <span className="text-sm mt-1">Consult</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="history"
-                        className="flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
+                        className="col-span-2 flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
                     >
                         <History className="h-12 w-12" />
                         <span className="text-sm mt-1">History</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="browse"
-                        className="flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
+                        className="col-span-2 flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
                     >
                         <Search className="h-12 w-12" />
                         <span className="text-sm mt-1">Browse</span>
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="about"
+                        className="flex flex-col items-center justify-center h-20 p-4 rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
+                    >
+                        <Info className="h-10 w-10" />
+                        <span className="text-xs mt-1">About</span>
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent value="consultation" className="flex-1 mt-16">
@@ -266,6 +274,9 @@ const AppContent: React.FC = () => {
                 </TabsContent>
                 <TabsContent value="browse" className="flex-1 mt-12">
                     <BrowseView />
+                </TabsContent>
+                <TabsContent value="about" className="flex-1 mt-12">
+                    <AboutView />
                 </TabsContent>
             </Tabs>
 
