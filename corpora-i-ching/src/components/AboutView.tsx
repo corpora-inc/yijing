@@ -3,7 +3,7 @@ import { getVersion } from "@tauri-apps/api/app";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { GithubIcon, Globe, Mail, Info, Landmark } from "lucide-react";
+import { GithubIcon, Globe, Mail, Info } from "lucide-react";
 
 const AboutView = () => {
   const [appVersion, setAppVersion] = useState<string>("");
