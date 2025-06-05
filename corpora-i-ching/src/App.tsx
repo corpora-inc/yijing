@@ -214,13 +214,6 @@ const AppContent: React.FC = () => {
                         <Search className="h-12 w-12" />
                         <span className="text-sm mt-1">Browse</span>
                     </TabsTrigger>
-                    <TabsTrigger
-                        value="about"
-                        className="flex flex-col items-center justify-center h-20 p-4 rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
-                    >
-                        <Info className="h-10 w-10" />
-                        <span className="text-xs mt-1">About</span>
-                    </TabsTrigger>
                 </TabsList>
                 <TabsContent value="consultation" className="flex-1 mt-16">
                     {!hasReading ? (
@@ -274,9 +267,6 @@ const AppContent: React.FC = () => {
                 </TabsContent>
                 <TabsContent value="browse" className="flex-1 mt-12">
                     <BrowseView />
-                </TabsContent>
-                <TabsContent value="about" className="flex-1 mt-12">
-                    <AboutView />
                 </TabsContent>
             </Tabs>
 
