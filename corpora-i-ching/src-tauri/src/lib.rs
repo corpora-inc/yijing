@@ -152,6 +152,7 @@ fn rehydrate_reading(consultation_code: String) -> Result<Hexs, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
         .plugin(
             LogBuilder::new()
                 .targets([Target::new(TargetKind::Stdout)]) // Only stdout for now

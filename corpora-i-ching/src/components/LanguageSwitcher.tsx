@@ -14,8 +14,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Languages, Github, Mail, Globe, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getVersion } from "@tauri-apps/api/app";
+import { openUrl } from "@tauri-apps/plugin-opener";
 
-const EMAIL = "team@encorpora.io";
+const SUPPORT_EMAIL = "team@encorpora.io";
 const GITHUB_ISSUES = "https://github.com/corpora-inc/yijing/issues";
 const WEB = "https://www.encorpora.io";
 
@@ -61,7 +62,7 @@ const LanguageSwitcher: React.FC = () => {
         <DropdownMenuGroup>
           <DropdownMenuItem
             className="cursor-pointer text-sm"
-            onClick={() => window.open(GITHUB_ISSUES, "_blank")}
+            onClick={() => openUrl(GITHUB_ISSUES)}
           >
             <Github className="w-3.5 h-3.5 mr-2" />
             <span>Report Issues</span>
@@ -74,10 +75,10 @@ const LanguageSwitcher: React.FC = () => {
 
           <DropdownMenuItem
             className="cursor-pointer text-sm"
-            onClick={() => window.open(`mailto:${EMAIL}`, "_blank")}
+            onClick={() => openUrl(`mailto:${SUPPORT_EMAIL}`)}
           >
             <Mail className="w-3.5 h-3.5 mr-2" />
-            <span>{EMAIL}</span>
+            <span>{SUPPORT_EMAIL}</span>
             <DropdownMenuShortcut>
               <span className="text-xs bg-gray-100 px-1.5 py-0.5 rounded">
                 Email
@@ -86,7 +87,7 @@ const LanguageSwitcher: React.FC = () => {
           </DropdownMenuItem>
           <DropdownMenuItem
             className="cursor-pointer text-sm"
-            onClick={() => window.open(WEB, "_blank")}
+            onClick={() => openUrl(WEB)}
           >
             <Globe className="w-3.5 h-3.5 mr-2" />
             <span>{WEB}</span>
