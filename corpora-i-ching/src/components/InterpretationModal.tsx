@@ -11,7 +11,7 @@ interface InterpretationModalProps {
     attribution: string | null;
 }
 
-const InterpretationModal: React.FC<InterpretationModalProps> = ({ isOpen, onClose, text, attribution }) => {
+const InterpretationModal: React.FC<InterpretationModalProps> = ({ isOpen, onClose, text }) => {
     return createPortal(
         <Dialog open={isOpen} onOpenChange={onClose}>
             {/* Ensure the overlay covers the entire viewport */}
@@ -40,9 +40,7 @@ const InterpretationModal: React.FC<InterpretationModalProps> = ({ isOpen, onClo
                     {text ? (
                         <div className="max-w-[60rem] mx-auto"> {/* Cap text width for readability */}
                             <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{text}</p>
-                            {attribution && (
-                                <p className="text-sm text-gray-500 italic">— {attribution}</p>
-                            )}
+                            <p className="text-sm text-gray-500 italic">— Encorpora Team</p>
                         </div>
                     ) : (
                         <p className="text-gray-500 text-center">No interpretation available.</p>

@@ -120,7 +120,7 @@ const LanguageSwitcher: React.FC = () => {
         ))}
 
         <div className="px-4 py-3 text-center text-sm text-muted-foreground">
-          <span className="font-medium">Corpora Yi-Jing</span> • {appVersion}
+          <span className="font-medium">Corpora Yìjīng</span> • {appVersion}
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
