@@ -80,10 +80,6 @@ const LanguageSwitcher: React.FC = () => {
               <span className="flex-1 text-left">Report Issues</span>
             </Button>
           </DropdownMenuItem>
-
-
-
-
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator className="m-2 bg-gray-200" />
