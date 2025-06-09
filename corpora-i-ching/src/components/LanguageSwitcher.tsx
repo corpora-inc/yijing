@@ -35,7 +35,7 @@ const LanguageSwitcher: React.FC = () => {
       <DropdownMenuTrigger asChild>
         <Button
           size="icon"
-          className="fixed bottom-6 right-6 bg-black hover:bg-gray-800 text-white"
+          className="fab-fixed bottom-6 right-6 bg-black hover:bg-gray-800 text-white"
         >
           <Languages />
         </Button>
