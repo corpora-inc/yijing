@@ -18,7 +18,7 @@ import { openUrl } from "@tauri-apps/plugin-opener";
 
 const SUPPORT_EMAIL = "team@encorpora.io";
 const GITHUB_ISSUES = "https://github.com/corpora-inc/yijing/issues";
-const WEB = "https://www.encorpora.io";
+const WEB = "encorpora.io";
 
 const LanguageSwitcher: React.FC = () => {
   const { languages, setLanguages } = useLanguage();
@@ -87,7 +87,7 @@ const LanguageSwitcher: React.FC = () => {
           </DropdownMenuItem>
           <DropdownMenuItem
             className="cursor-pointer text-sm"
-            onClick={() => openUrl(WEB)}
+            onClick={() => openUrl(`https://www.${WEB}`)}
           >
             <Globe className="w-3.5 h-3.5 mr-2" />
             <span>{WEB}</span>
