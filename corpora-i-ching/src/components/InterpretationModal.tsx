@@ -3,6 +3,8 @@ import React from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogOverlay } from '@/components/ui/dialog';
+import { openUrl } from '@tauri-apps/plugin-opener';
+import { Globe } from 'lucide-react';
 
 interface InterpretationModalProps {
     isOpen: boolean;
@@ -11,7 +13,7 @@ interface InterpretationModalProps {
     attribution: string | null;
 }
 
-const InterpretationModal: React.FC<InterpretationModalProps> = ({ isOpen, onClose, text, attribution }) => {
+const InterpretationModal: React.FC<InterpretationModalProps> = ({ isOpen, onClose, text }) => {
     return createPortal(
         <Dialog open={isOpen} onOpenChange={onClose}>
             {/* Ensure the overlay covers the entire viewport */}
@@ -40,9 +42,18 @@ const InterpretationModal: React.FC<InterpretationModalProps> = ({ isOpen, onClo
                     {text ? (
                         <div className="max-w-[60rem] mx-auto"> {/* Cap text width for readability */}
                             <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">{text}</p>
-                            {attribution && (
-                                <p className="text-sm text-gray-500 italic">— {attribution}</p>
-                            )}
+                            <span className="text-gray-500 text-sm mt-2">
+                                <Button
+                                    variant="ghost"
+                                    size="default"
+                                    className="justify-start hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => openUrl(`https://encorpora.io`)}
+                                >
+                                    -
+                                    <span>https://encorpora.io</span>
+                                    <Globe />
+                                </Button>
+                            </span>
                         </div>
                     ) : (
                         <p className="text-gray-500 text-center">No interpretation available.</p>

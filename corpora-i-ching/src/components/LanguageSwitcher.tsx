@@ -1,92 +1,127 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuGroup,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Languages, Github, Mail, Globe, } from "lucide-react";
+import { getVersion } from "@tauri-apps/api/app";
+import { openUrl } from "@tauri-apps/plugin-opener";
+
+const SUPPORT_EMAIL = "team@encorpora.io";
+const GITHUB_ISSUES = "https://github.com/corpora-inc/yijing/issues";
+const WEB = "encorpora.io";
 
 const LanguageSwitcher: React.FC = () => {
   const { languages, setLanguages } = useLanguage();
+  const [appVersion, setAppVersion] = useState<string>("");
 
-  // Count selected languages
-  const selectedLanguagesCount =
-    Object.values(languages).filter(Boolean).length;
+  useEffect(() => {
+    getVersion().then(setAppVersion).catch(() => setAppVersion("N/A"));
+  }, []);
 
-  // Disable unselecting if only one language is selected
-  const isLanguageDisabled = (langKey: keyof typeof languages) => {
-    return selectedLanguagesCount === 1 && languages[langKey];
-  };
+  const selectedCount = Object.values(languages).filter(Boolean).length;
+  const disableLang = (k: keyof typeof languages) =>
+    selectedCount === 1 && languages[k];
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        {/* <Button className="fixed right-10 bottom-10 rounded-full bg-black text-white hover:bg-gray-800" */}
-        <Button className="fab-fixed rounded-full bg-black text-white hover:bg-gray-800">
+        <Button
+          size="icon"
+          className="fixed bottom-6 right-6 bg-black hover:bg-gray-800 text-white"
+        >
           <Languages />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-white shadow-lg">
-        <DropdownMenuLabel>Show Languages</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <Checkbox
-            id="zh"
-            checked={languages.zh}
-            onCheckedChange={(checked) =>
-              !isLanguageDisabled("zh") &&
-              setLanguages({ ...languages, zh: !!checked })
-            }
-            className="mr-2"
-            disabled={isLanguageDisabled("zh")}
-          />
-          <label htmlFor="zh">中文</label>
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <Checkbox
-            checked={languages.pinyin}
-            onCheckedChange={(checked) =>
-              !isLanguageDisabled("pinyin") &&
-              setLanguages({ ...languages, pinyin: !!checked })
-            }
-            className="mr-2"
-            id="pinyin"
-            disabled={isLanguageDisabled("pinyin")}
-          />
-          <label htmlFor="pinyin">Pinyin</label>
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <Checkbox
-            checked={languages.en}
-            onCheckedChange={(checked) =>
-              !isLanguageDisabled("en") &&
-              setLanguages({ ...languages, en: !!checked })
-            }
-            id="en"
-            className="mr-2"
-            disabled={isLanguageDisabled("en")}
-          />
-          <label htmlFor="en">English</label>
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <Checkbox
-            checked={languages.es}
-            onCheckedChange={(checked) =>
-              !isLanguageDisabled("es") &&
-              setLanguages({ ...languages, es: !!checked })
-            }
-            id="es"
-            className="mr-2"
-            disabled={isLanguageDisabled("es")}
-          />
-          <label htmlFor="es">Español</label>
-        </DropdownMenuItem>
+
+      <DropdownMenuContent className="w-64 bg-white shadow-lg">
+
+        <DropdownMenuGroup className="space-y-3 p-1">
+          {/* Website */}
+          <DropdownMenuItem asChild>
+            <Button
+              variant="outline"
+              size="default"
+              className="w-full justify-start px-4 py-3 hover:bg-gray-100 cursor-pointer"
+              onClick={() => openUrl(`https://www.${WEB}`)}
+            >
+              <Globe className="w-5 h-5 mr-3 flex-shrink-0" />
+              <span className="flex-1 text-left">{WEB}</span>
+            </Button>
+          </DropdownMenuItem>
+          {/* Support Email */}
+          <DropdownMenuItem asChild>
+            <Button
+              variant="outline"
+              size="default"
+              className="w-full justify-start px-4 py-3 hover:bg-gray-100 cursor-pointer"
+              onClick={() => openUrl(`mailto:${SUPPORT_EMAIL}`)}
+            >
+              <Mail className="w-5 h-5 mr-3 flex-shrink-0" />
+              <span className="flex-1 text-left">{SUPPORT_EMAIL}</span>
+            </Button>
+          </DropdownMenuItem>
+          {/* Report Issues */}
+          <DropdownMenuItem asChild>
+            <Button
+              variant="outline"
+              size="default"
+              className="w-full justify-start px-4 py-3 hover:bg-gray-100 cursor-pointer"
+              onClick={() => openUrl(GITHUB_ISSUES)}
+            >
+              <Github className="w-5 h-5 mr-3 flex-shrink-0" />
+              <span className="flex-1 text-left">Report Issues</span>
+            </Button>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+
+        <DropdownMenuSeparator className="m-2 bg-gray-200" />
+
+        {/* Language toggles */}
+        {/* <DropdownMenuLabel className="text-center text-base font-medium flex items-center space-x-2 px-4 py-2">
+          <Languages className="w-5 h-5" />
+          <span>Show languages</span>
+        </DropdownMenuLabel> */}
+
+        {(["zh", "pinyin", "en", "es"] as (keyof typeof languages)[]).map((key) => (
+          <DropdownMenuItem
+            key={key}
+            onSelect={(e) => e.preventDefault()}
+            className="px-4 py-3"
+          >
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id={key}
+                checked={languages[key]}
+                onCheckedChange={(c) =>
+                  !disableLang(key) && setLanguages({ ...languages, [key]: !!c })
+                }
+                className="h-6 w-6 flex-shrink-0 cursor-pointer"
+                disabled={disableLang(key)}
+              />
+              <label htmlFor={key} className="text-lg select-none cursor-pointer">
+                {key === "zh"
+                  ? "中文"
+                  : key === "pinyin"
+                    ? "Pinyin"
+                    : key === "en"
+                      ? "English"
+                      : "Español"}
+              </label>
+            </div>
+          </DropdownMenuItem>
+        ))}
+
+        <div className="px-4 py-3 text-center text-sm text-muted-foreground">
+          <span className="font-medium">Corpora Yìjīng</span> • {appVersion}
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
