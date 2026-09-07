@@ -17,7 +17,9 @@ Audit date: 2026-09-07. This file distinguishes prepared code from store accepta
 - Use Node 22.12+ and `npm ci`; dependencies and Tauri CLI are lockfile-controlled.
 - Android: current generated project targets and compiles API 36, with AGP 8.11.
   Use NDK r28 or newer for default 16 KB native page alignment. This Mac has
-  NDK r29 installed; its inherited NDK setting was r26, so override it explicitly.
+  NDK r29 installed; its inherited NDK/linker settings were r26. Explicit Android
+  linker flags in `src-tauri/.cargo/config.toml` enforce 16 KB alignment in both
+  Tauri and Gradle builds. Setting NDK_HOME alone did not protect the second build.
 - iOS: use Xcode 26+ and the iOS 26 SDK. This Mac has Xcode 26.6. Tauri now
   generates the standard project, replacing the obsolete manual-signing template.
 - Keep both existing bundle identifiers unchanged. Keep version 0.4.0 consistent
@@ -58,3 +60,18 @@ Check every packaged Android native library for 16 KB alignment and test on a
 and smoke-test saved-history upgrade behavior on installed copies of 0.3.x.
 Upload new screenshots and the prepared store copy, submit updates, and record
 store acceptance and final live versions here.
+
+## Verify the packaged Android library
+
+Run this against the finished APK, not an intermediate `.so`. It checks ZIP
+alignment and every packaged ARM64/x86_64 ELF LOAD segment, and fails if no
+64-bit libraries are present. The check rejected a real 4 KB-aligned output
+that passed `zipalign`; this is why both checks are necessary.
+
+```sh
+python3 scripts/check-android-apk.py path/to/app.apk \
+  --zipalign "$ANDROID_HOME/build-tools/36.0.0/zipalign"
+```
+
+Set `NDK_HOME` to locate llvm-readelf. Signed release APKs derived from the
+release AAB need the same validation; a debug APK is not proof of a signed release.
