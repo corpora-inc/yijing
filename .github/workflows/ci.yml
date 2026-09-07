@@ -1,0 +1,51 @@
+name: Yijing checks
+on:
+  pull_request:
+    paths: ['corpora-i-ching/**', '.github/workflows/ci.yml']
+  push:
+    branches: [main]
+    paths: ['corpora-i-ching/**', '.github/workflows/ci.yml']
+permissions:
+  contents: read
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: corpora-i-ching
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: corpora-i-ching/package-lock.json
+      - run: npm ci
+      - run: npm audit
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-results
+          path: corpora-i-ching/test-results/
+  native:
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: corpora-i-ching/src-tauri
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: corpora-i-ching/src-tauri
+      - run: cargo fmt --check
+      - run: cargo test --locked
+      - run: cargo clippy --locked -- -D warnings
+      - run: cargo install cargo-audit --locked
+      # Informational upstream GTK warnings remain visible; no advisories are ignored.
+      - run: cargo audit

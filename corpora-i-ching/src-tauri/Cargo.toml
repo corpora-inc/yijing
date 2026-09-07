@@ -1,8 +1,8 @@
 [package]
 name = "yijing"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.4.0"
+description = "An offline, private companion to the Book of Changes"
+authors = ["Corpora Inc"]
 edition = "2021"
 
 [lib]
@@ -20,7 +20,7 @@ tauri-plugin-opener = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 getrandom = "0.3.1"
-rusqlite = { version = "0.34.0", features = ["bundled"] }
+rusqlite = { version = "0.40.2", features = ["bundled"] }
 anyhow = "1.0.97"
 tauri-plugin-log = "2.3.1"
 log = "0.4.26"

@@ -1,67 +1,21 @@
-# 📱 iOS Build Configuration for Tauri
+# iOS builds
 
-This directory contains iOS-specific configuration for building and signing the app using [Tauri's mobile toolchain](https://tauri.app/v2/guides/building/mobile/overview/). It supports:
+Use the current Tauri CLI's standard generated Xcode project. The old custom
+project template pinned obsolete versions and excluded Apple Silicon simulators.
+It is no longer used. Signing belongs in local Xcode configuration or CI secrets.
 
-- Manual code signing with reusable provisioning profiles and certificates
-- Clean separation of secrets via `.env` file
-- Regeneration of `project.yml` from a safe, tracked template
-- Deployment via `cargo tauri ios build` to a physical device or IPA export
+From `corpora-i-ching/`:
 
----
-
-## 🧱 Structure
-
-```
-src-tauri/
-├── gen/
-│   └── apple/
-│       └── project.yml         # generated from template
-├── ios/
-│   ├── project.yml.template    # template with placeholders
-│   ├── .env                    # local, untracked semi-secrets
-│   ├── ExportOptions.plist     # controls IPA export type (e.g. app-store-connect)
-│   └── README.md
+```sh
+npm ci
+npm run tauri -- ios init --ci
+npm run tauri -- ios build --debug --target aarch64-sim --no-sign --ci
+npm run tauri -- ios build --export-method app-store-connect --ci
 ```
 
----
+App version comes from `src-tauri/tauri.conf.json`. Keep the existing bundle ID
+`com.corpora-yijing.app` so updates preserve installed users' data. Before upload,
+check the highest build number in App Store Connect and set a higher build number.
+Use Xcode 26 or later with the iOS 26 SDK for current App Store submissions.
 
-## 🔐 Environment Variables
-
-Create a local `ios/.env` file like this:
-
-```env
-CODE_SIGN_STYLE=Manual
-CODE_SIGN_IDENTITY="iPhone Distribution: Your Company Name (TEAMID1234)"
-PROVISIONING_PROFILE=your-profile-uuid
-DEVELOPMENT_TEAM=TEAMID1234
-```
-
-> Never commit `.env`. It's in `.gitignore`.
-
----
-
-## 🏗️ Building for iOS
-
-
-```bash
-cd ios/
-./generate.sh
-cd ..
-cargo tauri ios init
-cargo tauri icon icons/512.png
-cp ios/ExportOptions.plist gen/apple/
-cargo tauri ios build
-```
-
-## 🛠 Tips
-
-- If signing fails, ensure the certificate and profile are valid and linked in the [Apple Developer Portal](https://developer.apple.com/account/).
-- Your Apple ID is **not** required during the build. Avoid committing it.
-
-## 📚 References
-
-- [`project.yml` template upstream](https://github.com/tauri-apps/tauri/blob/dev/crates/tauri-cli/templates/mobile/ios/project.yml)
-- [`ExportOptions.plist` upstream](https://github.com/tauri-apps/tauri/blob/dev/crates/tauri-cli/templates/mobile/ios/ExportOptions.plist)
-- [Xcode code signing docs](https://developer.apple.com/documentation/bundleresources/entitlements)
-
-https://github.com/yonaskolb/XcodeGen
+See `../../release/READINESS.md` for the release audit and pending store checks.

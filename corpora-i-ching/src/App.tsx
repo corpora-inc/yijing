@@ -7,7 +7,6 @@ import ReadingView from './components/ReadingView';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { LanguageProvider } from './context/LanguageContext';
 import { Book, History, Search, Trash2 } from 'lucide-react';
-import { info } from '@tauri-apps/plugin-log';
 import { formatDistanceToNow } from 'date-fns';
 import BrowseView from './components/BrowseView';
 
@@ -62,6 +61,7 @@ const AppContent: React.FC = () => {
     const [transformedHex, setTransformedHex] = useState<IChingHexagram | null>(null);
     const [interpretation, setInterpretation] = useState<ConsultationInterpretation | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isCasting, setIsCasting] = useState(false);
     const [readings, setReadings] = useState<Reading[]>([]);
 
     // Load and sort readings from LocalStorage on mount
@@ -93,22 +93,20 @@ const AppContent: React.FC = () => {
     };
 
     const handleNewReading = async (title: string) => {
+        if (isCasting) return;
+        setIsCasting(true);
         try {
-            info("generate_reading");
             const hexagram = await invoke<Hexs>("generate_reading");
-            info("Hexagram from generate_reading: " + JSON.stringify(hexagram));
 
             const originalHexData = await invoke<IChingHexagram>("fetch_hexagram_data", {
                 bin: hexagram.binary,
             });
-            console.log("Original hexagram data from DB:", originalHexData);
 
             let transformedHexData: IChingHexagram | null = null;
             if (hexagram.transformed_binary) {
                 transformedHexData = await invoke<IChingHexagram>("fetch_hexagram_data", {
                     bin: hexagram.transformed_binary,
                 });
-                console.log("Transformed hexagram data from DB:", transformedHexData);
             }
 
             await fetchInterpretation(hexagram.consultation_code);
@@ -129,26 +127,24 @@ const AppContent: React.FC = () => {
         } catch (error) {
             console.error("Failed to generate reading:", error);
             setError(String(error));
-            setHasReading(true);
+        } finally {
+            setIsCasting(false);
         }
     };
 
     const handleRevisitReading = async (consultationCode: string) => {
         try {
             const hexagram = await invoke<Hexs>("rehydrate_reading", { consultationCode });
-            console.log("Rehydrated hexagram from rehydrate_reading with code:", consultationCode, hexagram);
 
             const originalHexData = await invoke<IChingHexagram>("fetch_hexagram_data", {
                 bin: hexagram.binary,
             });
-            console.log("Rehydrated original hexagram data from DB:", originalHexData);
 
             let transformedHexData: IChingHexagram | null = null;
             if (hexagram.transformed_binary) {
                 transformedHexData = await invoke<IChingHexagram>("fetch_hexagram_data", {
                     bin: hexagram.transformed_binary,
                 });
-                console.log("Rehydrated transformed hexagram data from DB:", transformedHexData);
             }
 
             await fetchInterpretation(consultationCode);
@@ -188,35 +184,38 @@ const AppContent: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col flex-1 h-screen relative pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
-            {/* Navigation Tabs */}
+        <div className="app-shell">
+            <header className="app-header">
+                <div className="brand"><span className="brand-seal" lang="zh">易</span><div><h1>Yìjīng</h1><p>THE BOOK OF CHANGES</p></div></div>
+                <LanguageSwitcher />
+            </header>
             <Tabs value={mode} onValueChange={handleTabChange} className="w-full flex flex-col">
-                <TabsList className="grid w-full grid-cols-3 gap-2 p-2">
+                <TabsList className="app-navigation" aria-label="Main navigation">
                     <TabsTrigger
                         value="consultation"
-                        className="flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
+                        className="nav-tab"
                     >
-                        <Book className="h-12 w-12" />
-                        <span className="text-sm mt-1">Consult</span>
+                        <Book className="h-4 w-4" />
+                        <span className="text-sm">Consult</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="history"
-                        className="flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
+                        className="nav-tab"
                     >
-                        <History className="h-12 w-12" />
-                        <span className="text-sm mt-1">History</span>
+                        <History className="h-4 w-4" />
+                        <span className="text-sm">History</span>
                     </TabsTrigger>
                     <TabsTrigger
                         value="browse"
-                        className="flex flex-col items-center justify-center h-20 p-4 bg-white rounded-lg shadow-md hover:bg-gray-200 transition-all duration-200 data-[state=active]:bg-gray-300"
+                        className="nav-tab"
                     >
-                        <Search className="h-12 w-12" />
-                        <span className="text-sm mt-1">Browse</span>
+                        <Search className="h-4 w-4" />
+                        <span className="text-sm">Browse</span>
                     </TabsTrigger>
                 </TabsList>
-                <TabsContent value="consultation" className="flex-1 mt-16">
+                <TabsContent value="consultation" className="page-content">
                     {!hasReading ? (
-                        <NoReadingView onNewReading={handleNewReading} />
+                        <><NoReadingView onNewReading={handleNewReading} isCasting={isCasting} />{error && <p role="alert" className="error-message">{error}</p>}</>
                     ) : (
                         <div className="relative w-full h-full">
                             <ReadingView
@@ -230,30 +229,30 @@ const AppContent: React.FC = () => {
                         </div>
                     )}
                 </TabsContent>
-                <TabsContent value="history" className="flex-1 mt-12">
-                    <div className="p-4">
-                        <h2 className="text-xl font-semibold mb-4">Reading History</h2>
+                <TabsContent value="history" className="page-content">
+                    <div className="history-view">
+                        <p className="eyebrow">YOUR JOURNAL</p><h2 className="page-title">Reading History</h2>
                         {readings.length === 0 ? (
-                            <p className="text-gray-500">No readings yet.</p>
+                            <p className="empty-state">No readings yet. Your consultations will appear here.</p>
                         ) : (
                             <ul className="space-y-2">
                                 {readings.map((reading) => (
                                     <li
                                         key={reading.id}
-                                        className="flex items-center justify-between p-2 border rounded hover:bg-gray-100"
+                                        className="history-entry"
                                     >
-                                        <span
-                                            className="flex-1 cursor-pointer flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2"
+                                        <button
+                                            className="history-open"
                                             onClick={() => handleRevisitReading(reading.consultationCode)}
                                         >
                                             <span className="font-medium break-words">{reading.title || 'Untitled'}</span>
                                             <span className="text-sm text-gray-500 block sm:inline break-words">
                                                 {formatDistanceToNow(new Date(reading.timestamp), { addSuffix: true })}
                                             </span>
-                                        </span>
+                                        </button>
                                         <button
                                             onClick={() => handleDeleteReading(reading.id)}
-                                            className="text-red-500 hover:text-red-700"
+                                            className="delete-reading"
                                             aria-label="Delete reading"
                                         >
                                             <Trash2 className="h-5 w-5" />
@@ -264,13 +263,12 @@ const AppContent: React.FC = () => {
                         )}
                     </div>
                 </TabsContent>
-                <TabsContent value="browse" className="flex-1 mt-12">
+                <TabsContent value="browse" className="page-content">
                     <BrowseView />
                 </TabsContent>
             </Tabs>
 
-            {/* Language Switcher FAB (Bottom-Right) */}
-            <LanguageSwitcher />
+            <footer className="app-footer">A moment of stillness. A new perspective.</footer>
         </div>
     );
 };

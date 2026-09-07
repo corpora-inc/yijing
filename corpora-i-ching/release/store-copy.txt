@@ -1,0 +1,17 @@
+Yìjīng — Private I Ching Oracle
+
+Make space for a new perspective with the Book of Changes.
+
+Consult the I Ching, explore all 64 hexagrams, and return to past readings in your private journal. Read Chinese text alongside English, Spanish, and pinyin, choosing the languages you want to see together.
+
+Designed for quiet reflection:
+• Cast a reading with the traditional three-coin probabilities.
+• Read your hexagram, changing lines, and transformed hexagram.
+• Explore the hexagrams through the trigram matrix or numbered list.
+• Keep questions and reading history on your device.
+• Use the app offline, with no account, advertising, or tracking.
+
+External website and support links open only when you choose them.
+
+What's new in 0.4.0
+A warmer, more spacious design for consultation and reading. Improved navigation, accessible browsing controls, and better layouts on smaller screens. Updated app dependencies and native tooling. Failed consultations can be retried without losing your question.

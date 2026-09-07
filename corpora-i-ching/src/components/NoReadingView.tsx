@@ -5,9 +5,10 @@ import { useLanguage } from '../context/LanguageContext';
 
 interface NoReadingViewProps {
     onNewReading: (title: string) => void;
+    isCasting: boolean;
 }
 
-const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
+const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading, isCasting }) => {
     const { languages } = useLanguage();
     const [title, setTitle] = useState('');
 
@@ -16,9 +17,15 @@ const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
     };
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-md max-w-xl mx-auto text-center">
+        <section className="consultation-card">
+            <div className="oracle-symbol" aria-hidden="true"><i /><i /><i className="broken" /><i /><i className="broken" /><i className="broken" /></div>
+            <p className="eyebrow">AN ANCIENT PRACTICE, A PRESENT MOMENT</p>
+            <h2 className="consultation-title">Make space<br />for an answer.</h2>
+            <label htmlFor="question" className="question-label">What is on your mind?</label>
             <Input
+                id="question"
                 type="text"
+                autoComplete="off"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder={
@@ -32,7 +39,7 @@ const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
                                     ? 'Ingrese título o pregunta...'
                                     : 'Enter title or question...'
                 }
-                className="mb-4 w-full"
+                className="question-input"
             />
             {languages.zh && (
                 <p className="mb-2 text-gray-600 font-serif text-xl">
@@ -57,7 +64,9 @@ const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
             <hr className="my-4" />
             <Button
                 onClick={handleNewReadingWithTitle}
-                className="w-full max-w-full flex flex-col items-center h-auto min-h-10 py-4 bg-black text-white font-semibold rounded-lg shadow-lg border border-blue-400"
+                disabled={isCasting}
+                aria-busy={isCasting}
+                className="cast-button"
             >
                 <div className="flex flex-col items-center gap-1">
                     {languages.zh && <span className="break-words text-xl">新咨询</span>}
@@ -66,7 +75,8 @@ const NoReadingView: React.FC<NoReadingViewProps> = ({ onNewReading }) => {
                     {languages.es && <span className="break-words text-base">Nueva Lectura</span>}
                 </div>
             </Button>
-        </div>
+            <p className="privacy-note">Private by nature. Your readings stay on this device.</p>
+        </section>
     );
 };
 
