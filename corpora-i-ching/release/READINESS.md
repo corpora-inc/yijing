@@ -32,7 +32,10 @@ References: [Google target API requirements](https://developer.android.com/googl
 
 The starting default branch had 25 open Dependabot alerts. JavaScript dependencies
 were upgraded to patched releases and `npm audit` reports zero vulnerabilities.
-Rust dependencies were refreshed, including Tauri 2.11.5 and serde_with 3.22.0.
+Rust dependencies were refreshed, including Tauri 2.11.5, serde_with 3.22.0, and
+rusqlite 0.40.2 with a current bundled SQLite. `cargo audit` reports zero
+vulnerability findings, plus 16 upstream unmaintained-package warnings and the
+GLib unsoundness warning described below. No warnings are hidden.
 
 One known upstream constraint remains: Tauri's Linux GTK3 dependency graph uses
 GLib 0.18.5, affected by RUSTSEC-2024-0429. The fix requires GLib 0.20+, incompatible
