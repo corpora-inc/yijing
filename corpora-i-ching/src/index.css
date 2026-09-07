@@ -1,121 +1,81 @@
 @import "tailwindcss";
 
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #f6f6f6;
-    /* background-color: #f3f4f6; */
-    /* Can adjust later per your note */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+@theme {
+    --color-background: #f5f1e9;
+    --color-foreground: #292c26;
+    --color-card: #fffcf5;
+    --color-card-foreground: #292c26;
+    --color-popover: #fffcf5;
+    --color-popover-foreground: #292c26;
+    --color-primary: #943f32;
+    --color-primary-foreground: #fffaf1;
+    --color-secondary: #eae5d9;
+    --color-secondary-foreground: #343b30;
+    --color-muted: #ede8de;
+    --color-muted-foreground: #6b6b5f;
+    --color-accent: #e8e5d8;
+    --color-accent-foreground: #343b30;
+    --color-border: #dcd5c7;
+    --color-input: #c8bfaf;
+    --color-ring: #943f32;
+    --color-destructive: #a1362b;
 }
 
-#root {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 320px;
-    /* Reduced to fit 326px screens */
-    margin: 0 auto;
-    padding: 0.25rem;
-    /* Tighter padding for small screens */
-}
-
-/* Responsive adjustments */
-@media (min-width: 375px) {
-    #root {
-        max-width: 375px;
-        /* Slightly wider for modern phones */
-        padding: 0.5rem;
-    }
-}
-
-@media (min-width: 640px) {
-    #root {
-        max-width: 640px;
-        padding: 0.75rem;
-    }
-}
-
-@media (min-width: 1024px) {
-    #root {
-        max-width: 800px;
-        padding: 1.5rem;
-    }
-}
-
-/* Ensure FAB doesn’t overlap on small screens */
-.fixed {
-    z-index: 10;
-    bottom: 0.5rem;
-    /* Even closer for very small screens */
-    right: 0.5rem;
-}
-
-button.fixed {
-    width: 3rem;
-    /* Smaller FAB for narrow screens */
-    height: 3rem;
-    font-size: 1.25rem;
-    /* Adjusted + size */
-}
-
-/* Text and card adjustments for mobile */
-h2 {
-    font-size: 1rem;
-    /* Smaller headers for very narrow screens */
-}
-
-pre {
-    background-color: #e5e7eb;
-    padding: 0.25rem;
-    font-size: 0.75rem;
-    /* Even smaller text for narrow screens */
-    border-radius: 0.25rem;
-    overflow-x: auto;
-    /* Allow horizontal scroll if lines are too wide */
-}
-
-.space-y-6>* {
-    margin-bottom: 0.5rem;
-    /* Even tighter spacing */
-}
-
-@media (min-width: 375px) {
-    h2 {
-        font-size: 1.125rem;
-    }
-
-    pre {
-        font-size: 0.875rem;
-    }
-
-    .space-y-6>* {
-        margin-bottom: 0.75rem;
-    }
-}
-
-@media (min-width: 640px) {
-    h2 {
-        font-size: 1.25rem;
-    }
-
-    pre {
-        padding: 0.5rem;
-        font-size: 1rem;
-    }
-
-    .space-y-6>* {
-        margin-bottom: 1.5rem;
-    }
-}
-
-.fab-fixed {
-    position: fixed !important;
-    /* bottom: 1.5rem !important; */
-    /* calulate env safe-bottome +1rem */
-    bottom: calc(max(env(safe-area-inset-bottom), 1.5rem)) !important;
-    right: 1.5rem !important;
-}
+:root { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: var(--color-foreground); background: var(--color-background); font-synthesis: none; }
+body { margin: 0; min-width: 280px; min-height: 100vh; background: radial-gradient(ellipse at 50% 0%, #fffaf0, transparent 65%); }
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: wait; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--color-ring); outline-offset: 4px; }
+::selection { background: #ead2b9; }
+#root { width: 100%; }
+.app-shell { max-width: 860px; min-height: 100svh; margin: auto; padding: max(env(safe-area-inset-top), 24px) max(env(safe-area-inset-right), 20px) max(env(safe-area-inset-bottom), 20px) max(env(safe-area-inset-left), 20px); display: flex; flex-direction: column; }
+.app-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 28px; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-seal { display: grid; place-items: center; width: 42px; height: 46px; border: 1px solid #943f32; border-radius: 3px; color: #943f32; font-family: Georgia, serif; font-size: 28px; }
+.brand h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 28px; line-height: 1.1; }
+.brand p { font-size: 8px; letter-spacing: .2em; margin-top: 7px; color: #6b6b5f; }
+.language-button { width: 44px; height: 44px; border: 1px solid var(--color-border); border-radius: 50%; background: transparent; color: #454a3c; box-shadow: none; }
+.language-button:hover { background: var(--color-muted); }
+.app-navigation { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; height: auto; background: #eae6dc; padding: 5px; border: 1px solid #e0d9cc; border-radius: 14px; }
+.nav-tab { height: 44px; gap: 9px; border-radius: 10px; color: #626558; }
+.nav-tab[data-state=active] { background: #fffcf5; color: #873b2e; box-shadow: 0 2px 5px #3833260b; }
+.page-content { margin-top: 28px; min-width: 0; }
+.consultation-card { text-align: center; background: #fffcf5; border: 1px solid #e2dacb; border-radius: 20px; padding: 40px clamp(20px, 6vw, 64px) 26px; box-shadow: 0 16px 50px #5d4f3010; }
+.oracle-symbol { width: 54px; margin: 0 auto 28px; display: flex; flex-direction: column; gap: 5px; }
+.oracle-symbol i { display: block; height: 5px; background: #555d49; border-radius: 1px; }
+.oracle-symbol i.broken { background: linear-gradient(to right, #555d49 42%, transparent 42%, transparent 58%, #555d49 58%); }
+.eyebrow { font-size: 9px; letter-spacing: .18em; color: #79705d; font-weight: 600; }
+.consultation-title { font-family: Georgia, 'Times New Roman', serif; font-size: clamp(38px, 7vw, 58px); font-weight: 400; line-height: 1.08; letter-spacing: -.035em; margin: 18px 0 32px; }
+.question-label { display: block; text-align: left; margin-bottom: 10px; font-size: 13px; color: #555b4b; }
+.question-input { height: 52px; background: #f7f4ed; border: 1px solid #d5cdbc; border-radius: 9px; font-size: 16px; padding: 14px; margin-bottom: 24px; box-shadow: none; }
+.consultation-card > p:not(.eyebrow):not(.privacy-note) { line-height: 1.8; color: #686b5e; }
+.consultation-card hr { border-color: #e8e0d1; margin: 24px 0; }
+.cast-button { display: flex; flex-direction: column; width: 100%; height: auto; min-height: 54px; padding: 16px 20px; border-radius: 10px; background: #943f32; color: #fffaf1; border: 1px solid #88372b; box-shadow: 0 4px 12px #943f3217; white-space: normal; }
+.cast-button:hover { background: #7c3227; }
+.secondary-action { background: #424b3c; border-color: #424b3c; }
+.secondary-action:hover { background: #333d2e; }
+.privacy-note { color: #767768; font-size: 11px; line-height: 1.7; margin-top: 18px; }
+.app-footer { text-align: center; color: #757364; font: italic 13px Georgia, serif; padding: 30px 0 10px; margin-top: auto; }
+.page-title { font: 32px Georgia, serif; margin: 10px 0 24px; }
+.history-view { padding: 12px 0; }
+.empty-state { padding: 44px 24px; border: 1px dashed #cbc3b2; border-radius: 16px; color: #6b6b5f; text-align: center; }
+.history-entry { display: flex; align-items: center; padding: 12px 16px; border: 1px solid var(--color-border); background: var(--color-card); border-radius: 12px; gap: 12px; }
+.history-open { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px; text-align: left; padding: 8px 0; overflow-wrap: anywhere; }
+.delete-reading { width: 44px; height: 44px; display: grid; place-items: center; color: #943f32; border-radius: 8px; flex-shrink: 0; }
+.delete-reading:hover { background: #f3e7dd; }
+.reading-card { width: 100%; border: 1px solid var(--color-border); border-radius: 18px; padding: 32px clamp(16px, 5vw, 48px); background: var(--color-card); line-height: 1.85; }
+.interpretation-dialog { background: var(--color-card); width: calc(100% - 32px); max-width: 680px; max-height: calc(100svh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 40px); display: flex; flex-direction: column; padding: 20px; border-radius: 16px; }
+.interpretation-dialog > .overflow-y-auto { min-height: 0; }
+.error-message { color: #a1362b; padding: 18px; overflow-wrap: anywhere; }
+pre { overflow-x: auto; white-space: pre-wrap; }
+@media (min-width: 640px) { .app-shell { padding-top: max(env(safe-area-inset-top), 40px); } .app-header { padding-bottom: 32px; } .consultation-card { padding-top: 48px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+@layer base { * { border-color: var(--color-border); } }
+.browse-view [data-slot=card-content] { padding-left: 12px; padding-right: 12px; }
+.hexagram-matrix { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.matrix-cell { padding: 0; border: 1px solid var(--color-border); text-align: center; }
+.matrix-choice { width: 100%; min-height: 36px; font-size: 12px; color: #454a3c; }
+.matrix-choice:hover, .matrix-choice[aria-pressed=true] { background: #e6e9dc; color: #2d4026; }
+.matrix-choice:disabled { cursor: default; }
+.hexagram-matrix th { color: #737663; font-size: 15px; font-weight: 400; }

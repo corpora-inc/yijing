@@ -47,7 +47,7 @@ const HexagramDisplay: React.FC<HexagramDisplayProps> = ({ hexs, hexagram, isOri
         : hexagram.changing_lines.filter((_, idx) => isChangingArray[idx]); // Show only changing lines
 
     return (
-        <CardContent className="space-y-4 flex flex-col items-center">
+        <CardContent className="reading-card space-y-4 flex flex-col items-center">
             <span className="text-sm text-gray-500 mb-2">{hexagram.number}</span> {/* Subtle hex number */}
             <div className="flex flex-col items-center">
                 {displayLines.map((digit, idx) => (

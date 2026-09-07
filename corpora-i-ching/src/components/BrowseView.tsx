@@ -86,7 +86,7 @@ const BrowseView: React.FC = () => {
     }
 
     return (
-        <div className="p-4 flex flex-col gap-4 h-full">
+        <div className="browse-view flex flex-col gap-4 h-full">
             {/* Navigation Section (Matrix and List) */}
             <div className="space-y-4">
                 {/* Traditional Matrix */}
@@ -95,8 +95,8 @@ const BrowseView: React.FC = () => {
                         <CardTitle>Traditional Matrix</CardTitle>
                     </CardHeader> */}
                     <CardContent>
-                        <div className="w-full overflow-x-hidden">
-                            <table className="table-auto border-collapse w-full">
+                        <div className="matrix-container">
+                            <table className="hexagram-matrix" aria-label="Hexagrams by upper and lower trigram">
                                 <thead>
                                     <tr>
                                         <th className="p-1 text-center text-xs sm:text-sm"> </th>
@@ -117,12 +117,15 @@ const BrowseView: React.FC = () => {
                                                 return (
                                                     <td
                                                         key={colIndex}
-                                                        className={`p-1 text-center border cursor-pointer hover:bg-gray-200 transition-colors
-                              ${isSelected ? 'bg-gray-300' : 'bg-white'}
-                              text-xs sm:text-sm min-w-[30px] min-h-[30px]`}
-                                                        onClick={() => hexagram && setSelectedHexagram(hexagram)}
+                                                        className="matrix-cell"
                                                     >
-                                                        {hexNumber}
+                                                        <button
+                                                            className="matrix-choice"
+                                                            aria-label={`Hexagram ${hexNumber}`}
+                                                            aria-pressed={isSelected}
+                                                            disabled={!hexagram}
+                                                            onClick={() => hexagram && setSelectedHexagram(hexagram)}
+                                                        >{hexNumber}</button>
                                                     </td>
                                                 );
                                             })}
@@ -156,7 +159,7 @@ const BrowseView: React.FC = () => {
                                         .map((hexagram) => {
                                             const isSelected = selectedHexagram?.number === hexagram.number;
                                             return (
-                                                <div
+                                                <button
                                                     key={hexagram.id}
                                                     className={`p-2 border rounded cursor-pointer hover:bg-gray-200 transition-colors
                           ${isSelected ? 'bg-gray-300' : 'bg-white'}`}
@@ -175,7 +178,7 @@ const BrowseView: React.FC = () => {
                                                             {hexagram.name_zh} ({hexagram.name_pinyin})
                                                         </span>
                                                     </div>
-                                                </div>
+                                                </button>
                                             );
                                         })}
                                 </div>

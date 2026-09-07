@@ -1,8 +1,8 @@
 [package]
 name = "yijing"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+version = "0.4.0"
+description = "An offline, private companion to the Book of Changes"
+authors = ["Corpora Inc"]
 edition = "2021"
 
 [lib]

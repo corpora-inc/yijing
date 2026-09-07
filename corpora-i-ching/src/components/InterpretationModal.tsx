@@ -2,7 +2,7 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogOverlay } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogOverlay } from '@/components/ui/dialog';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { Globe } from 'lucide-react';
 
@@ -21,22 +21,13 @@ const InterpretationModal: React.FC<InterpretationModalProps> = ({ isOpen, onClo
                 className="fixed inset-0 top-0 left-0 bg-black/80 z-50 w-screen h-screen min-w-[100vw] min-h-[100vh]"
             />
             <DialogContent
-                className="w-full bg-white shadow-xl border border-gray-200
-                           max-w-[100vw] sm:max-w-[95vw] md:max-w-[60rem] /* Cap width for readability */
-                           top-[env(safe-area-inset-top)]
-                           translate-y-0
-                           rounded-none sm:rounded-lg
-                           m-0 sm:m-auto
-                           flex flex-col" // Use flexbox to control layout
-
+                aria-describedby={undefined}
+                className="interpretation-dialog"
             >
                 <DialogHeader className="border-b border-gray-200 pb-4 px-6 pt-2">
                     <DialogTitle className="text-sm font-semibold text-gray-900">
                         Consultation Interpretation
                     </DialogTitle>
-                    <DialogClose className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors">
-                        <span className="sr-only">Close</span>
-                    </DialogClose>
                 </DialogHeader>
                 <div className="flex-1 overflow-y-auto px-4 py-2 space-y-4">
                     {text ? (

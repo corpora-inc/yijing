@@ -7,7 +7,6 @@ use crate::fetch_all::fetch_all_hexagrams;
 use crate::fetch_consultation_interpretation::fetch_interpretation;
 use crate::fetch_hex_data::fetch_hexagram_data;
 
-use getrandom;
 use serde::Serialize;
 use tauri_plugin_log::{Builder as LogBuilder, Target, TargetKind};
 
@@ -97,15 +96,10 @@ fn generate_reading() -> Result<Hexs, String> {
 
     // Derive the original binary.
     let original_bin = original_binary(&consultation_code);
-    println!(
-        "Consultation code: {}, binary: {}",
-        consultation_code, original_bin
-    );
 
     // Derive the transformed binary if there are changing lines.
     let transformed_bin = if consultation_code.contains('6') || consultation_code.contains('9') {
         let transformed = transformed_binary(&consultation_code);
-        println!("Transformed binary: {}", transformed);
         Some(transformed)
     } else {
         None
@@ -122,21 +116,17 @@ fn generate_reading() -> Result<Hexs, String> {
 #[tauri::command]
 fn rehydrate_reading(consultation_code: String) -> Result<Hexs, String> {
     // Validate the consultation_code length and characters
-    if consultation_code.len() != 6 || !consultation_code.chars().all(|c| c >= '6' && c <= '9') {
+    if consultation_code.len() != 6 || !consultation_code.chars().all(|c| ('6'..='9').contains(&c))
+    {
         return Err("Invalid consultation code: must be 6 digits (6-9)".to_string());
     }
 
     // Derive the original binary.
     let original_bin = original_binary(&consultation_code);
-    println!(
-        "Rehydrated consultation code: {}, binary: {}",
-        consultation_code, original_bin
-    );
 
     // Derive the transformed binary if there are changing lines.
     let transformed_bin = if consultation_code.contains('6') || consultation_code.contains('9') {
         let transformed = transformed_binary(&consultation_code);
-        println!("Rehydrated transformed binary: {}", transformed);
         Some(transformed)
     } else {
         None
@@ -168,4 +158,59 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_consultation_rehydrates_with_correct_changes() {
+        for value in 0..4096u32 {
+            let code: String = (0..6)
+                .map(|shift| char::from(b'6' + ((value >> (shift * 2)) & 3) as u8))
+                .collect();
+            let reading = rehydrate_reading(code.clone()).unwrap();
+            assert_eq!(reading.consultation_code, code);
+            assert_eq!(reading.binary.len(), 6);
+            let changes = code.contains('6') || code.contains('9');
+            assert_eq!(reading.transformed_binary.is_some(), changes);
+            for (index, digit) in code.bytes().enumerate() {
+                assert_eq!(
+                    reading.binary.as_bytes()[index],
+                    if digit % 2 == 1 { b'1' } else { b'0' }
+                );
+                if let Some(ref transformed) = reading.transformed_binary {
+                    assert_eq!(
+                        transformed.as_bytes()[index],
+                        if digit == b'6' || digit == b'7' {
+                            b'1'
+                        } else {
+                            b'0'
+                        }
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn invalid_saved_codes_are_rejected() {
+        for code in ["", "77777", "7777777", "012345", "77777x", "乾乾"] {
+            assert!(rehydrate_reading(code.to_string()).is_err());
+        }
+    }
+
+    #[test]
+    fn embedded_database_contains_all_hexagrams_and_lines() {
+        for value in 0..64 {
+            let binary = format!("{value:06b}");
+            let connection = db::open_embedded_db().unwrap();
+            let hex = fetch_hex_data::get_hexagram_by_binary(connection, &binary).unwrap();
+            assert!((1..=64).contains(&hex.number));
+            assert_eq!(hex.binary, binary);
+            assert_eq!(hex.changing_lines.len(), 6);
+            assert!(!hex.judgment_en.is_empty());
+        }
+    }
 }

@@ -16,11 +16,12 @@ If you find this project useful or interesting, please consider giving it a star
 
 [![Star on GitHub](https://img.shields.io/github/stars/corpora-inc/yijing.svg?style=social)](https://github.com/corpora-inc/yijing/stargazers)
 
-## 🚀 Get the App (Testing)
+## 🚀 Get the App
 
-We are currently in the testing phase. Help us improve the app by joining our beta programs:
+Yijing is available on iOS and Android.
 
-- **iOS:** [Join the TestFlight Beta](https://testflight.apple.com/join/pRuaCtHC)
+- **iOS:** [Get it on the App Store](https://apps.apple.com/us/app/id6744656859)
+- **iOS beta:** [Join TestFlight](https://testflight.apple.com/join/pRuaCtHC)
 - **Android:** [Get it on Google Play](https://play.google.com/store/apps/details?id=com.corpora_yijing.app)
 
 ## 💻 Tech Stack
@@ -69,7 +70,7 @@ We are currently in the testing phase. Help us improve the app by joining our be
      choco install nodejs-lts -y
      ```
 
-   Make sure you have at least **Node 16**.
+   Use **Node 22.12 or later**.
 
 2. [Rust](https://www.rust-lang.org/tools/install) & Cargo
 
@@ -91,7 +92,7 @@ We are currently in the testing phase. Help us improve the app by joining our be
    rustup update
    ```
 
-3.  [Tauri Prerequisites](https://tauri.app/v1/guides/getting-started/prerequisites) (Ensure you follow the setup for your specific Operating System, including mobile development requirements if applicable).
+3.  [Tauri Prerequisites](https://v2.tauri.app/start/prerequisites/) (Ensure you follow the setup for your specific Operating System, including mobile development requirements if applicable).
 
     Tauri needs some native toolkits to build its WebView.
 
@@ -134,11 +135,11 @@ We are currently in the testing phase. Help us improve the app by joining our be
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/corpora-inc/yijing.git
-    cd yijing
+    cd yijing/corpora-i-ching
     ```
 2.  **Install frontend dependencies:**
     ```bash
-    npm install
+    npm ci
     ```
 3.  **Run in development mode (Desktop):**
     ```bash
@@ -151,7 +152,7 @@ We are currently in the testing phase. Help us improve the app by joining our be
     ```
     Find the installers/binaries in `src-tauri/target/release/bundle/`.
 5.  **Mobile Development:**
-    - Refer to the official [Tauri Mobile documentation](https://tauri.app/v1/guides/mobile/) for detailed instructions on setting up emulators/simulators and running/building for iOS and Android.
+    - Refer to the official [Tauri Mobile documentation](https://v2.tauri.app/distribute/) for detailed instructions on setting up emulators/simulators and running/building for iOS and Android.
     - Common commands: `npm run tauri android dev`, `npm run tauri ios dev`, `npm run tauri android build`, `npm run tauri ios build`.
 
 #### Tips & gotchas
@@ -193,3 +194,5 @@ We respect your privacy. The application is designed to work offline and does no
 - **Email:** team@encorpora.io
 - **GitHub:** [https://github.com/corpora-inc](https://github.com/corpora-inc)
 - **Website:** [https://encorpora.io](https://encorpora.io)
+
+Release evidence and remaining store checks: [0.4.0 readiness](corpora-i-ching/release/READINESS.md).
