@@ -31,7 +31,7 @@ fn toss_coin() -> Result<u8, anyhow::Error> {
     let mut buf: [u8; 1] = [0u8; 1];
     getrandom::fill(&mut buf)
         .map_err(|e| anyhow::anyhow!("Failed to generate random byte: {:?}", e))?;
-    Ok(if buf[0] % 2 == 0 { 2 } else { 3 }) // 50% chance for 2 or 3
+    Ok(if buf[0].is_multiple_of(2) { 2 } else { 3 }) // 50% chance for 2 or 3
 }
 
 /// Generates a line based on three coin tosses with I Ching probabilities.
