@@ -8,7 +8,7 @@ From `corpora-i-ching/`:
 
 ```sh
 npm ci
-npm run tauri -- ios init --ci
+npm run ios:init
 npm run tauri -- ios build --debug --target aarch64-sim --no-sign --ci
 npm run tauri -- ios build --export-method app-store-connect --ci
 ```
@@ -45,9 +45,11 @@ Apple's upload tooling before submitting it.
 `src-tauri/Info.ios.plist` declares that the app uses no non-exempt encryption.
 Reassess that declaration if the app's cryptographic functionality changes.
 
-Add `../../ios/PrivacyInfo.xcprivacy` to the generated Xcode target as a resource
-so it lands at the root of `Yijing.app`. Verify the final IPA contains it. The
-manifest declares local file-metadata access and no tracking or data collection.
+`npm run ios:init` runs the standard Tauri generator, then automatically adds
+`ios/PrivacyInfo.xcprivacy` to the generated target as a resource and fixes the
+Rust script working directory. Run `npm run ios:verify -- path/to/Yijing.ipa`
+before upload to check the final bundle. The manifest declares local file-metadata
+access and no tracking or data collection.
 
 Run Android and iOS Tauri commands sequentially for the same checkout. Their
 local build-options service can otherwise mix platform environments, even with
