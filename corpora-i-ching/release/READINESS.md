@@ -4,13 +4,26 @@ Audit date: 2026-09-07. This file distinguishes prepared code from store accepta
 
 ## Store identity and observed status
 
-- Android: `com.corpora_yijing.app` — [public listing](https://play.google.com/store/apps/details?id=com.corpora_yijing.app) reachable.
-- iOS: `com.corpora-yijing.app`, Apple ID `6744656859` — [public listing](https://apps.apple.com/us/app/y%C3%ACj%C4%ABng/id6744656859) shows 0.3.9, released June 10, 2025.
-- Public availability does not establish account good standing, policy compliance,
-  pending review status, or availability in every territory. Console credentials
-  were not available during this audit. No store upload or metadata edit was made.
-- The Apple listing contains an accidental “Thought for a couple of seconds”
-  prefix. `store-copy.txt` supplies replacement copy and release notes.
+Authenticated release audit: 2026-09-07. Existing service accounts and signing
+materials were recovered locally; no credentials are stored in this repository.
+
+- Android: `com.corpora_yijing.app`. The previous production release was 0.3.9
+  (3009). The Publisher API accepted 0.4.0 (4000), validated the edit, and committed
+  the production release with updated copy, release notes, and three screenshots.
+  Store review/distribution is distinct from a successful API commit.
+- iOS: `com.corpora-yijing.app`, Apple ID `6744656859`. Build 0.4.0 passed Apple
+  validation, uploaded successfully, processed as `VALID`, and is attached to the
+  0.4.0 App Store version. Submission completed at 19:14 UTC; both the version
+  and review submission report `WAITING_FOR_REVIEW`. Updated native iPhone and
+  iPad screenshots have finished processing.
+- The iOS update replaces the accidental “Thought for a couple of seconds” listing
+  prefix. The age-rating questionnaire now includes the new capability questions
+  and occasional literary references to wine, weapons, and conflict. No pricing
+  or territory changes were made.
+- An older Mac 0.3.6 submission remains rejected with unresolved review issues.
+  This mobile release does not resolve or resubmit that separate Mac submission.
+- These API observations do not certify every account-level policy, agreement,
+  tax, banking, or console-only notice, nor establish final review approval.
 
 ## Build requirements
 
@@ -32,7 +45,8 @@ References: [Google target API requirements](https://developer.android.com/googl
 
 ## Dependency security
 
-The starting default branch had 25 open Dependabot alerts. JavaScript dependencies
+The starting default branch had 25 open Dependabot alerts. After PR #32 merged,
+GitHub closed 24; the one remaining alert is the Linux-only GLib issue below. JavaScript dependencies
 were upgraded to patched releases and `npm audit` reports zero vulnerabilities.
 Rust dependencies were refreshed, including Tauri 2.11.5, serde_with 3.22.0, and
 rusqlite 0.40.2 with a current bundled SQLite. `cargo audit` reports zero
@@ -46,20 +60,27 @@ Do not suppress/dismiss the alert or claim that the repository has zero advisori
 See [upstream discussion](https://github.com/tauri-apps/tauri/issues/12919) and
 [RustSec](https://rustsec.org/advisories/RUSTSEC-2024-0429).
 
-## Store release completion
+## Signed release validation
 
-With authenticated access, inspect Google Play policy status, App content and Data
-safety, production tracks, signing, and API/page-size notices. Check App Store
-Connect agreements, age rating, app privacy, build processing, and review messages.
-Confirm these against the built artifact and actual app behavior rather than
-inferring answers from the public listing.
-
-Build signed release artifacts using the existing upload key and Apple profile.
-Check every packaged Android native library for 16 KB alignment and test on a
-16 KB emulator. Run the iOS archive validation, verify required privacy manifests,
-and smoke-test saved-history upgrade behavior on installed copies of 0.3.x.
-Upload new screenshots and the prepared store copy, submit updates, and record
-store acceptance and final live versions here.
+- Android retains all four shipping ABIs: ARM64, ARMv7, x86, and x86_64. Bundletool
+  reports `PAGE_ALIGNMENT_16K`; its generated universal APK passes ZIP alignment
+  and every ARM64/x86_64 ELF LOAD segment check. Version code is 4000, targeting
+  and compiling API 36.
+- On an Android 36 ARM64 emulator reporting `PAGE_SIZE=16384`, a reading created
+  in Play's unprotected 0.3.9 APKs survived an in-place update to 0.4.0 and reopened
+  correctly. Both builds were re-signed with the same local test key. The final
+  AAB's ARM64 library and frontend assets are byte-identical to that tested APK.
+  The new build no longer displays the old 16 KB compatibility warning.
+- iOS signed archive and IPA export passed with Xcode 26.6 / iOS SDK 26.5. Apple
+  validation reported no errors, and processing completed as `VALID`. The final
+  IPA contains the privacy manifest and export-compliance declaration.
+- Apple warning 90068 is forward-looking: from spring 2027, uploads will require
+  minimum iOS 15. This release retains currently accepted iOS 14 support.
+- `npm run ios:init` includes the privacy manifest in the generated Xcode target.
+  `npm run ios:verify -- path/to/Yijing.ipa` checks the final exported declarations.
+- Native iPhone/iPad simulator screenshots and Android emulator screenshots show
+  the new design. Review approval and final public availability must still be
+  checked after submission; do not equate an accepted upload with a live release.
 
 ## Verify the packaged Android library
 

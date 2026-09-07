@@ -1,4 +1,5 @@
 *.plist
+!Info.ios.plist
 !macos-entitlements.plist
 *.pkg
 apple-signing/
