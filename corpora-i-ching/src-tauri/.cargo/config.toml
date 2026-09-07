@@ -1,9 +1,0 @@
-# Enforce Google Play's 16 KB requirement in both Tauri's initial build and
-# Gradle's android-studio-script rebuild, including when a developer's inherited
-# linker points at an older NDK. Check ELF LOAD segments in the packaged APK;
-# ZIP alignment alone does not prove native-library page alignment.
-[target.aarch64-linux-android]
-rustflags = ["-C", "link-arg=-Wl,-z,max-page-size=16384"]
-
-[target.x86_64-linux-android]
-rustflags = ["-C", "link-arg=-Wl,-z,max-page-size=16384"]

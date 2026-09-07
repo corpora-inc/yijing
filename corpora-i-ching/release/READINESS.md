@@ -18,7 +18,7 @@ Audit date: 2026-09-07. This file distinguishes prepared code from store accepta
 - Android: current generated project targets and compiles API 36, with AGP 8.11.
   Use NDK r28 or newer for default 16 KB native page alignment. This Mac has
   NDK r29 installed; its inherited NDK/linker settings were r26. Explicit Android
-  linker flags in `src-tauri/.cargo/config.toml` enforce 16 KB alignment in both
+  linker flags in `src-tauri/build.rs` enforce 16 KB alignment in both
   Tauri and Gradle builds. Setting NDK_HOME alone did not protect the second build.
 - iOS: use Xcode 26+ and the iOS 26 SDK. This Mac has Xcode 26.6. Tauri now
   generates the standard project, replacing the obsolete manual-signing template.
