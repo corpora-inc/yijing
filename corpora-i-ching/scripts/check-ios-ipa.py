@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Verify Yijing's release declarations in the final exported IPA."""
 import argparse
+from pathlib import Path
 import plistlib
 import zipfile
+
+from app_icons import assert_artifact_icons, rendered, render
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('ipa')
@@ -24,4 +27,6 @@ with zipfile.ZipFile(args.ipa) as ipa:
                and 'C617.1' in d.get('NSPrivacyAccessedAPITypeReasons', [])
                for d in manifest.get('NSPrivacyAccessedAPITypes', [])):
         raise SystemExit('Missing local file-metadata reason')
-    print(f"PASS: {info['CFBundleShortVersionString']} ({info['CFBundleVersion']}), privacy manifest and encryption declaration")
+    with rendered() as temporary:
+        assert_artifact_icons(ipa, render(Path(temporary)))
+    print(f"PASS: {info['CFBundleShortVersionString']} ({info['CFBundleVersion']}), privacy manifest, encryption declaration, and app icon")

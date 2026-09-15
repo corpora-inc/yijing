@@ -33,3 +33,4 @@ dist-ssr
 *.keystore
 playwright-report/
 test-results/
+__pycache__/
