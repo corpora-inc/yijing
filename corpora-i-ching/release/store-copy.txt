@@ -13,5 +13,5 @@ Designed for quiet reflection:
 
 External website and support links open only when you choose them.
 
-What's new in 0.4.0
-A warmer, more spacious design for consultation and reading. Improved navigation, accessible browsing controls, and better layouts on smaller screens. Updated app dependencies and native tooling. Failed consultations can be retried without losing your question.
+What's new in 0.5.0
+Restores the Yìjīng app icon.

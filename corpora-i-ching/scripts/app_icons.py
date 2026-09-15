@@ -119,4 +119,7 @@ def assert_artifact_icons(archive, expected: Path):
         assert_same_pixels(archive.read(entry), (expected / pairs[name]).read_bytes(), entry)
     missing = sorted(set(pairs) - set(found))
     if missing:
-        raise SystemExit(f'FAIL: launcher icons missing from the artifact: {missing}')
+        hint = '' if any('/mipmap-' in n for n in names) else (
+            '; resource paths are shortened in Gradle release APKs, so check the AAB '
+            'or a bundletool universal APK built from it')
+        raise SystemExit(f'FAIL: launcher icons missing from the artifact: {missing}{hint}')
