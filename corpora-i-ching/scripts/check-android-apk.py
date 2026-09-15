@@ -8,6 +8,8 @@ import subprocess
 import tempfile
 import zipfile
 
+from app_icons import assert_artifact_icons, rendered, render
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -39,7 +41,9 @@ def main():
             checked += 1
     if not checked:
         raise SystemExit('FAIL: no 64-bit native libraries were found in the APK')
-    print(f'PASS: ZIP alignment and {checked} packaged native libraries')
+    with zipfile.ZipFile(args.apk) as apk, rendered() as temporary:
+        assert_artifact_icons(apk, render(Path(temporary)))
+    print(f'PASS: ZIP alignment and {checked} packaged native libraries, and launcher icons')
 
 
 if __name__ == '__main__':

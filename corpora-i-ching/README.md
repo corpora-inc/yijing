@@ -39,9 +39,7 @@ Below is a comprehensive checklist of what you should verify and prepare before 
 
 ### 2. App Icons & Graphics
 - **App Icons:**
-  Prepare high-quality icons in all required sizes. For example:
-  - **Apple App Store:** 1024×1024 pixels, plus other sizes for different devices.
-  - **Windows/Mac/Linux:** Ensure you have all necessary icon sizes as per each platform’s guidelines.
+  Every platform icon renders from `icon-src/app-icon.svg`. See `icon-src/README.md`.
 - **Splash/Launch Screens (if applicable):**
   Create and configure splash screens for a polished startup experience.
 - **Screenshots & Promotional Assets:**

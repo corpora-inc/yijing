@@ -45,7 +45,8 @@ Apple's upload tooling before submitting it.
 `src-tauri/Info.ios.plist` declares that the app uses no non-exempt encryption.
 Reassess that declaration if the app's cryptographic functionality changes.
 
-`npm run ios:init` runs the standard Tauri generator, then automatically adds
+`npm run ios:init` runs the standard Tauri generator, renders the app icon into the
+generated asset catalog (see `../../icon-src/README.md`), then automatically adds
 `ios/PrivacyInfo.xcprivacy` to the generated target as a resource and fixes the
 Rust script working directory. Run `npm run ios:verify -- path/to/Yijing.ipa`
 before upload to check the final bundle. The manifest declares local file-metadata

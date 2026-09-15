@@ -1,6 +1,6 @@
 [package]
 name = "yijing"
-version = "0.4.0"
+version = "0.5.0"
 description = "An offline, private companion to the Book of Changes"
 authors = ["Corpora Inc"]
 edition = "2021"

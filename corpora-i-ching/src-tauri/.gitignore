@@ -18,3 +18,7 @@ app-release-*
 # will have schema files for capabilities auto-completion
 # /gen/schemas
 /gen/
+
+# Rendered by `npm run icons` when no generated project exists; the init scripts write into gen/ instead.
+/icons/ios/
+/icons/android/
