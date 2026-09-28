@@ -8,6 +8,7 @@ From `corpora-i-ching/`:
 
 ```sh
 npm ci
+rustup component add llvm-tools
 npm run ios:init
 npm run tauri -- ios build --debug --target aarch64-sim --no-sign --ci
 npm run tauri -- ios build --export-method app-store-connect --ci
@@ -17,7 +18,10 @@ App version comes from `src-tauri/tauri.conf.json`. Keep the existing bundle ID
 `com.corpora-yijing.app` so updates preserve installed users' data. Before upload,
 check the highest build number in App Store Connect and set a higher build number.
 The 0.5.0 iOS release requires iOS 15 or later so it can build with Xcode 27.
-Devices on iOS 14 remain on the previous release.
+Devices on iOS 14 remain on the previous release. Install the Rust `llvm-tools`
+component before compiling: the Swift bridge uses `llvm-objcopy` to export C
+symbols with Xcode 27. If it was compiled before installing the component, clear
+the affected iOS build cache before rebuilding.
 
 See `../../release/READINESS.md` for the release audit and pending store checks.
 
