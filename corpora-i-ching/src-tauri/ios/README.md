@@ -8,7 +8,6 @@ From `corpora-i-ching/`:
 
 ```sh
 npm ci
-rustup component add llvm-tools
 npm run ios:init
 npm run tauri -- ios build --debug --target aarch64-sim --no-sign --ci
 npm run tauri -- ios build --export-method app-store-connect --ci
@@ -17,11 +16,7 @@ npm run tauri -- ios build --export-method app-store-connect --ci
 App version comes from `src-tauri/tauri.conf.json`. Keep the existing bundle ID
 `com.corpora-yijing.app` so updates preserve installed users' data. Before upload,
 check the highest build number in App Store Connect and set a higher build number.
-The 0.5.0 iOS release requires iOS 15 or later so it can build with Xcode 27.
-Devices on iOS 14 remain on the previous release. Install the Rust `llvm-tools`
-component before compiling: the Swift bridge uses `llvm-objcopy` to export C
-symbols with Xcode 27. If it was compiled before installing the component, clear
-the affected iOS build cache before rebuilding.
+Use Xcode 26 or later with the iOS 26 SDK for current App Store submissions.
 
 See `../../release/READINESS.md` for the release audit and pending store checks.
 
@@ -60,3 +55,12 @@ access and no tracking or data collection.
 Run Android and iOS Tauri commands sequentially for the same checkout. Their
 local build-options service can otherwise mix platform environments, even with
 separate Cargo target directories.
+
+## Release archive in CI
+
+The manually dispatched `Yijing iOS release archive` workflow selects Xcode 26
+to retain iOS 14 support and avoid Xcode 27 Swift bridge incompatibilities. It
+builds an unsigned release archive, checks its bundled icons and privacy
+declarations, and uploads the archive with its source commit. Download and
+extract `Yijing.xcarchive.zip`, then export and sign it locally using the manual
+App Store signing procedure above. Verify the final signed IPA before upload.
