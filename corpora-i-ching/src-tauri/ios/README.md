@@ -55,3 +55,12 @@ access and no tracking or data collection.
 Run Android and iOS Tauri commands sequentially for the same checkout. Their
 local build-options service can otherwise mix platform environments, even with
 separate Cargo target directories.
+
+## Release archive in CI
+
+The manually dispatched `Yijing iOS release archive` workflow selects Xcode 26
+to retain iOS 14 support and avoid Xcode 27 Swift bridge incompatibilities. It
+builds an unsigned release archive, checks its bundled icons and privacy
+declarations, and uploads the archive with its source commit. Download and
+extract `Yijing.xcarchive.zip`, then export and sign it locally using the manual
+App Store signing procedure above. Verify the final signed IPA before upload.

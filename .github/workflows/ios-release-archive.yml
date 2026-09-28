@@ -1,0 +1,61 @@
+name: Yijing iOS release archive
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  archive:
+    runs-on: macos-15
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: corpora-i-ching
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode 26
+        working-directory: .
+        run: |
+          XCODE_APP=$(python3 - <<'PY'
+          from pathlib import Path
+          apps = list(Path('/Applications').glob('Xcode_26*.app'))
+          if not apps:
+              raise SystemExit('Xcode 26 is required for the iOS 14 release target')
+          print(max(apps, key=lambda p: tuple(int(x) for x in p.stem[6:].split('.'))))
+          PY
+          )
+          sudo xcode-select -s "$XCODE_APP/Contents/Developer"
+          xcodebuild -version
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: corpora-i-ching/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: corpora-i-ching/src-tauri
+          key: ios-release-xcode26
+      - run: npm ci
+      - run: npm run ios:init
+      - name: Build unsigned release archive
+        run: npm run tauri -- ios build --target aarch64 --archive-only --no-sign --ci
+      - name: Verify packaged icon and privacy declarations
+        run: |
+          mkdir -p /tmp/yijing-verify/Payload
+          cp -R src-tauri/gen/apple/build/yijing_iOS.xcarchive/Products/Applications/*.app /tmp/yijing-verify/Payload/
+          (cd /tmp/yijing-verify && zip -qr /tmp/Yijing-unsigned.ipa Payload)
+          npm run ios:verify -- /tmp/Yijing-unsigned.ipa
+      - name: Package archive with metadata
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent src-tauri/gen/apple/build/yijing_iOS.xcarchive /tmp/Yijing.xcarchive.zip
+          git rev-parse HEAD > /tmp/Yijing-source-commit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yijing-ios-release-archive
+          path: |
+            /tmp/Yijing.xcarchive.zip
+            /tmp/Yijing-source-commit.txt
+          retention-days: 7
+          if-no-files-found: error
