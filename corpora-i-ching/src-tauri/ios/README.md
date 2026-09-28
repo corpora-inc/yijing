@@ -16,7 +16,8 @@ npm run tauri -- ios build --export-method app-store-connect --ci
 App version comes from `src-tauri/tauri.conf.json`. Keep the existing bundle ID
 `com.corpora-yijing.app` so updates preserve installed users' data. Before upload,
 check the highest build number in App Store Connect and set a higher build number.
-Use Xcode 26 or later with the iOS 26 SDK for current App Store submissions.
+The 0.5.0 iOS release requires iOS 15 or later so it can build with Xcode 27.
+Devices on iOS 14 remain on the previous release.
 
 See `../../release/READINESS.md` for the release audit and pending store checks.
 
